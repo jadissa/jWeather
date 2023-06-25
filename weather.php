@@ -255,7 +255,7 @@ $RESPONSE_DATA = [
 */
 
 header ('Content-Type: image/png');
-$canvas = @imagecreate( $OPTIONS['width'],$OPTIONS['height'] );
+$canvas = @imagecreatetruecolor( $OPTIONS['width'],$OPTIONS['height'] );
 
 // Canvas foreground
 list( $text_r,$text_g,$text_b ) = sscanf( $OPTIONS['fg_color'],"#%02x%02x%02x" );
