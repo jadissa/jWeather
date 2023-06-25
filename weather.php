@@ -21,7 +21,7 @@ $OPTIONS = [
       'days_to_fetch'   => 7,
 
       # text color
-      'fg_color'        => '#FFFFFF',
+      'fg_color'        => '#c62714',
 
       # text font
       'fg_font'         => '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
@@ -329,16 +329,19 @@ $X    = 400;
 $Y    = 118;
 foreach( $RESPONSE_DATA['forecast'] as $index => $WEATHER_DATA ) {
 
-      GenNextDayWeather( $WEATHER_DATA,$X,$Y,$OPTIONS,$canvas,$text_color );
+      GenNextDayWeather( $WEATHER_DATA,$X,$Y,$OPTIONS,$canvas,$text_r,$text_g,$text_b );
 }
 
 # Output
 imagepng( $canvas,'out.png');
 imagedestroy( $canvas );
 
-function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$text_color ) {
+function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$r,$g,$b ) {
       $X                = $X + 100;
       $Y                = $Y + 10;
+
+      # text color
+      $text_color = imagecolorallocate( $canvas,$r,$g,$b );
 
       # day text
       imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['dayofweek'] );
@@ -361,10 +364,10 @@ function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$text_color ) 
       $bar_height       = 130;
       $bar_width        = 22;
       $today_bar        = imagecreatetruecolor( $bar_width,$bar_height );
-      $white            = imagecolorallocate( $today_bar,255,255,255 );
+      $background_color = imagecolorallocate( $today_bar,$r,$g,$b );
       $black            = imagecolorallocate( $today_bar,0,0,0 );
       imagecolortransparent( $today_bar,$black );
-      ImageRectangleWithRoundedCorners( $today_bar,0,0,$bar_width,round( $WEATHER_DATA['high'] ),10,$white );
+      ImageRectangleWithRoundedCorners( $today_bar,0,0,$bar_width,round( $WEATHER_DATA['high'] ),10,$background_color );
       imagecopy( $canvas,$today_bar,$X,$Y,$src_x,$src_y,$bar_width,$bar_height );
 
       $X    = $ORIG_X;
