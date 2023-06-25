@@ -172,7 +172,7 @@ $CONDITION['img']       = $IMAGES[ $RAW_RESPONSE['current']['is_day'] ][ $CONDIT
 $CONDITION['temp']      = $RAW_RESPONSE['current']['temp_' . $OPTIONS['heat_unit'] ] . '' . $OPTIONS['degrees'];
 $CONDITION['humidty']   = $RAW_RESPONSE['current']['humidity'] . '' . $OPTIONS['percent'];
 $CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'] . '' . $OPTIONS['percent'];
-$CONDITION['wind']      = $RAW_RESPONSE['current']['wind_dir'] . ', ' . $RAW_RESPONSE['current']['wind_' . $OPTIONS['speed_unit'] ];
+$CONDITION['wind']      = $RAW_RESPONSE['current']['wind_dir'] . ', ' . $RAW_RESPONSE['current']['wind_' . $OPTIONS['speed_unit'] ] . ' ' . $OPTIONS['speed_unit'];
 
 // Response
 $RESPONSE_DATA = [
@@ -220,7 +220,7 @@ foreach( $RAW_RESPONSE['forecast']['forecastday'] as $i => $DAY_FORECAST ) {
 
 }
 
-/*
+
 // Test data
 $RESPONSE_DATA = [
       'heading'   => "Weather for some cool place",
@@ -252,7 +252,7 @@ $RESPONSE_DATA = [
             ],
       ],
 ];
-*/
+
 
 header ('Content-Type: image/png');
 $canvas = @imagecreatetruecolor( $OPTIONS['width'],$OPTIONS['height'] );
