@@ -1,14 +1,18 @@
 <?php
 require './vendor/autoload.php';
 
+
 /**
  *    Register App for use
- *    - Visit weatherapi.com
+ *    - Visit https://www.weatherapi.com/
  * 
  *    Generate your API key
  *    Make your environment aware of your API key
  *    - echo 'export WEATHER_KEY="API_KEY"' >>~/.bash_profile
  *    - re-launch your terminal
+ * 
+ *    Check out the API docs if needed
+ *    - https://www.weatherapi.com/docs/
  *    
  *    ZSH users will need to follow an additional step
  *    - echo 'source ~/.bash_profile' >>~/.zshrc
@@ -17,7 +21,7 @@ require './vendor/autoload.php';
  *    - optional step
  */
 $OPTIONS = [
-      # number days to forecast
+      # forecast days
       'days_to_fetch'   => 7,
 
       # text color
@@ -40,9 +44,10 @@ $OPTIONS = [
 
       # rounding specific
       'precision'       => 1,
-];
 
-$CLIENT = new GuzzleHttp\Client;
+      # language
+      'lang'            => 'en',
+];
 
 // Conditions
 $RESPONSE = file_get_contents( './weather_conditions.json' );
@@ -120,6 +125,7 @@ foreach( $FILES as $i => $file ) {
 
 // Weather
 # jWeather/vendor/guzzlehttp/guzzle/src/RequestOptions.php
+$CLIENT = new GuzzleHttp\Client;
 $RESPONSE = $CLIENT->request( 'GET', 'http://api.weatherapi.com/v1/forecast.json', [
       'query' => [
             'key'       => $_SERVER['WEATHER_KEY'],
@@ -127,6 +133,7 @@ $RESPONSE = $CLIENT->request( 'GET', 'http://api.weatherapi.com/v1/forecast.json
             'days'      => $OPTIONS['days_to_fetch'],
             'aqi'       => 'yes',
             'alerts'    => 'yes',
+            'lang'      => $OPTIONS['lang'],
       ],
 ] );
 
@@ -143,6 +150,20 @@ if( empty( $RAW_RESPONSE ) ) {
 
       exit;
 }
+
+// Language
+if( is_file( "lang/{$OPTIONS['lang']}/index.php" ) ) {
+
+      require_once "lang/{$OPTIONS['lang']}/index.php";
+      $LANG = $LANG[ $OPTIONS['lang'] ];
+
+} else {
+
+      require_once 'lang/en/index.php';
+      $LANG = $LANG['en'];
+
+}
+
 //print'<pre>';print_r( $RAW_RESPONSE );print'</pre>';exit;
 // Review current day
 $CURRENT_DAY      = $RAW_RESPONSE['forecast']['forecastday'][0];
@@ -164,9 +185,9 @@ $CONDITION        = [
 
 if( $NEXT_HOUR['temp_f'] > $CURRENT_HOUR['temp_f'] ) {
 
-      $direction  = 'increasing';
+      $direction  = $LANG['increasing'];
 
-} else $direction = 'decreasing';
+} else $direction = $LANG['decreasing'];
 
 $CONDITION_INFO         = $CONDITIONS[ $RAW_RESPONSE['current']['condition']['code'] ];
 
@@ -174,33 +195,33 @@ $CONDITION['code']      = $CONDITION_INFO['icon'];
 
 if( $RAW_RESPONSE['current']['is_day'] ) {
 
-      $CONDITION['desc']      = $CONDITION_INFO['day'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . '°';
+      $CONDITION['desc']      = $CONDITION_INFO['day'].", {$LANG['feels_like']} ".$RAW_RESPONSE['current']['feelslike_'.$OPTIONS['heat_unit'] ] . '°';
 
-} else $CONDITION['desc']     = $CONDITION_INFO['night'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . '°';
+} else $CONDITION['desc']     = $CONDITION_INFO['night'].", {$LANG['feels_like']} ". $RAW_RESPONSE['current']['feelslike_'.$OPTIONS['heat_unit'] ] . '°';
 
 $CONDITION['tz_id']     = $RAW_RESPONSE['location']['tz_id'];
 $CONDITION['location']  = $RAW_RESPONSE['location']['name'];
-$CONDITION['raw_temp']  = $RAW_RESPONSE['current']['temp_' . $OPTIONS['heat_unit'] ];
+$CONDITION['raw_temp']  = $RAW_RESPONSE['current']['temp_'.$OPTIONS['heat_unit'] ];
 $CONDITION['img']       = $IMAGES[ $RAW_RESPONSE['current']['is_day'] ][ $CONDITION['code'] ];
-$CONDITION['temp']      = $RAW_RESPONSE['current']['temp_' . $OPTIONS['heat_unit'] ] . '°';
-$CONDITION['humidity']  = $RAW_RESPONSE['current']['humidity'] . '%' . ' humidity';
-$CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'] . '%' . ' cloud coverage';
-$CONDITION['wind']      = $RAW_RESPONSE['current']['wind_dir'] . ', ' . $RAW_RESPONSE['current']['wind_' . $OPTIONS['speed_unit'] ] . ' ' . $OPTIONS['speed_unit'];
+$CONDITION['temp']      = $RAW_RESPONSE['current']['temp_'.$OPTIONS['heat_unit'] ].'°';
+$CONDITION['humidity']  = $RAW_RESPONSE['current']['humidity'].'%'." {$LANG['humidity']} ";
+$CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'].'%'." {$LANG['cloud_coverage']} ";
+$CONDITION['wind']      = $RAW_RESPONSE['current']['wind_dir']. ', '.$RAW_RESPONSE['current']['wind_'.$OPTIONS['speed_unit'] ].' '.$OPTIONS['speed_unit'];
 
 if( $RAW_RESPONSE['current']['gust_' . $OPTIONS['speed_unit'] ] > 0 ) {
 
-      $CONDITION['wind'] = $CONDITION['wind'] . ' with gusts at ' . $RAW_RESPONSE['current']['gust_' . $OPTIONS['speed_unit'] ] . ' ' . $OPTIONS['speed_unit'];
+      $CONDITION['wind'] = "{$CONDITION['wind']}, {$LANG['gusts_at']} ".$RAW_RESPONSE['current']['gust_'.$OPTIONS['speed_unit'] ]. ' '.$OPTIONS['speed_unit'];
 }
 
 // Response
 $RESPONSE_DATA = [
-      'heading'   => "Weather for {$CONDITION['location']}",
+      'heading'   => ucfirst( "{$LANG['weather_for']}" )." {$CONDITION['location']}",
       'current'   => [
             'img'       => $CONDITION['img'],
             'raw_temp'  => $CONDITION['raw_temp'],
             'temp'      => $CONDITION['temp'],
             'desc'      => $CONDITION['desc'],
-            'wind'      => "Wind {$CONDITION['wind']}",
+            'wind'      => ucfirst( "{$LANG['wind']}" )." {$CONDITION['wind']}",
             'cloud'     => $CONDITION['cloud'],
             'humidity'  => $CONDITION['humidity'],
       ],
@@ -232,9 +253,9 @@ foreach( $RAW_RESPONSE['forecast']['forecastday'] as $i => $DAY_FORECAST ) {
 
             if( $HOUR_FORECAST['temp_' . $OPTIONS['heat_unit'] ] > $RESPONSE_DATA['forecast'][ $i ]['high'] ) {
 
-                  $RESPONSE_DATA['forecast'][ $i ]['high']  = number_format( $HOUR_FORECAST['temp_' . $OPTIONS['heat_unit'] ],$OPTIONS['precision'] );
+                  $RESPONSE_DATA['forecast'][ $i ]['high']  = number_format( $HOUR_FORECAST['temp_'.$OPTIONS['heat_unit'] ],$OPTIONS['precision'] );
 
-            } else $RESPONSE_DATA['forecast'][ $i ]['low']  = number_format( $HOUR_FORECAST['temp_' . $OPTIONS['heat_unit'] ],$OPTIONS['precision'] );
+            } else $RESPONSE_DATA['forecast'][ $i ]['low']  = number_format( $HOUR_FORECAST['temp_'.$OPTIONS['heat_unit'] ],$OPTIONS['precision'] );
 
       }
 
