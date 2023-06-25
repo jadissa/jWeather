@@ -161,9 +161,9 @@ $CONDITION['code']      = $CONDITION_INFO['icon'];
 
 if( $RAW_RESPONSE['current']['is_day'] ) {
 
-      $CONDITION['desc']      = $CONDITION_INFO['day'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . '' . $OPTIONS['degrees'];
+      $CONDITION['desc']      = $CONDITION_INFO['day'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . ' ' . $OPTIONS['degrees'];
 
-} else $CONDITION['desc']     = $CONDITION_INFO['night'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . '' . $OPTIONS['degrees'];
+} else $CONDITION['desc']     = $CONDITION_INFO['night'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . ' ' . $OPTIONS['degrees'];
 
 $CONDITION['tz_id']     = $RAW_RESPONSE['location']['tz_id'];
 $CONDITION['location']  = $RAW_RESPONSE['location']['name'];
@@ -228,7 +228,7 @@ $RESPONSE_DATA = [
             'img'       => './images/64x64/night/116.png',
             'raw_temp'  => '84',
             'temp'      => '84°',
-            'desc'      => 'Partly cloudy, feels like 76',
+            'desc'      => 'Partly cloudy, feels like 76 °',
             'wind'      => 'Wind W, 5 mph',
       ],
       'forecast'  => [
