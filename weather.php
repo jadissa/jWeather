@@ -17,17 +17,29 @@ require './vendor/autoload.php';
  *    - optional step
  */
 $OPTIONS = [
-      'width'     => 1092,
-      'height'    => 448,
-      'bg_color'  => '',
-      'fg_color'  => '#FFFFFF',
-      'fg_font'   => '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
-      'fg_size'   => 20,
-      'fg_angle'  => 0,
-      'degrees'   => '°',
-      'percent'   => '%',
-      'heat_unit' => 'f',     # f or c
-      'speed_unit'=> 'mph',   # mph or kph
+      # number days to forecast
+      'days_to_fetch'   => 7,
+
+      # text color
+      'fg_color'        => '#FFFFFF',
+
+      # text font
+      'fg_font'         => '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
+
+      # text size
+      'fg_size'         => 20,
+
+      # text angle
+      'fg_angle'        => 0,
+
+      # f or c
+      'heat_unit'       => 'f',
+
+      # mph or kph
+      'speed_unit'      => 'mph',
+
+      # rounding specific
+      'precision'       => 1,
 ];
 
 $CLIENT = new GuzzleHttp\Client;
@@ -112,7 +124,7 @@ $RESPONSE = $CLIENT->request( 'GET', 'http://api.weatherapi.com/v1/forecast.json
       'query' => [
             'key'       => $_SERVER['WEATHER_KEY'],
             'q'         => 'auto:ip',
-            'days'      => 3,
+            'days'      => $OPTIONS['days_to_fetch'],
             'aqi'       => 'yes',
             'alerts'    => 'yes',
       ],
@@ -162,17 +174,17 @@ $CONDITION['code']      = $CONDITION_INFO['icon'];
 
 if( $RAW_RESPONSE['current']['is_day'] ) {
 
-      $CONDITION['desc']      = $CONDITION_INFO['day'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . ' ' . $OPTIONS['degrees'];
+      $CONDITION['desc']      = $CONDITION_INFO['day'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . '°';
 
-} else $CONDITION['desc']     = $CONDITION_INFO['night'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . ' ' . $OPTIONS['degrees'];
+} else $CONDITION['desc']     = $CONDITION_INFO['night'] . ', feels like ' . $RAW_RESPONSE['current']['feelslike_' . $OPTIONS['heat_unit'] ] . '°';
 
 $CONDITION['tz_id']     = $RAW_RESPONSE['location']['tz_id'];
 $CONDITION['location']  = $RAW_RESPONSE['location']['name'];
 $CONDITION['raw_temp']  = $RAW_RESPONSE['current']['temp_' . $OPTIONS['heat_unit'] ];
 $CONDITION['img']       = $IMAGES[ $RAW_RESPONSE['current']['is_day'] ][ $CONDITION['code'] ];
-$CONDITION['temp']      = $RAW_RESPONSE['current']['temp_' . $OPTIONS['heat_unit'] ] . '' . $OPTIONS['degrees'];
-$CONDITION['humidity']   = $RAW_RESPONSE['current']['humidity'] . '' . $OPTIONS['percent'] . ' humidity';
-$CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'] . '' . $OPTIONS['percent'] . ' cloud coverage';
+$CONDITION['temp']      = $RAW_RESPONSE['current']['temp_' . $OPTIONS['heat_unit'] ] . '°';
+$CONDITION['humidity']  = $RAW_RESPONSE['current']['humidity'] . '%' . ' humidity';
+$CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'] . '%' . ' cloud coverage';
 $CONDITION['wind']      = $RAW_RESPONSE['current']['wind_dir'] . ', ' . $RAW_RESPONSE['current']['wind_' . $OPTIONS['speed_unit'] ] . ' ' . $OPTIONS['speed_unit'];
 
 if( $RAW_RESPONSE['current']['gust_' . $OPTIONS['speed_unit'] ] > 0 ) {
@@ -220,9 +232,9 @@ foreach( $RAW_RESPONSE['forecast']['forecastday'] as $i => $DAY_FORECAST ) {
 
             if( $HOUR_FORECAST['temp_' . $OPTIONS['heat_unit'] ] > $RESPONSE_DATA['forecast'][ $i ]['high'] ) {
 
-                  $RESPONSE_DATA['forecast'][ $i ]['high']  = $HOUR_FORECAST['temp_' . $OPTIONS['heat_unit'] ];
+                  $RESPONSE_DATA['forecast'][ $i ]['high']  = number_format( $HOUR_FORECAST['temp_' . $OPTIONS['heat_unit'] ],$OPTIONS['precision'] );
 
-            } else $RESPONSE_DATA['forecast'][ $i ]['low']  = $HOUR_FORECAST['temp_' . $OPTIONS['heat_unit'] ];
+            } else $RESPONSE_DATA['forecast'][ $i ]['low']  = number_format( $HOUR_FORECAST['temp_' . $OPTIONS['heat_unit'] ],$OPTIONS['precision'] );
 
       }
 
@@ -236,34 +248,38 @@ $RESPONSE_DATA = [
             'img'       => './images/64x64/night/116.png',
             'raw_temp'  => '84',
             'temp'      => '84°',
-            'desc'      => 'Partly cloudy, feels like 76 °',
+            'desc'      => 'Partly cloudy, feels like 76°',
             'wind'      => 'Wind W, 5 mph',
+            'cloud'     => '10% cloud coverage',
+            'humidity'  => '6% humidity',
       ],
       'forecast'  => [
             [
                   'dayofweek' => 'Sun',
                   'img'       => './images/64x64/night/116.png',
-                  'high'      => 86.8,
-                  'low'       => 59.8,
+                  'high'      => number_format( 86.8,$OPTIONS['precision'] ),
+                  'low'       => number_format( 59.8,$OPTIONS['precision'] ),
             ],
             [
                   'dayofweek' => 'Mon',
                   'img'       => './images/64x64/night/113.png',
-                  'high'      => 78.2,
-                  'low'       => 42.5,
+                  'high'      => number_format( 78.2,$OPTIONS['precision'] ),
+                  'low'       => number_format( 42.5,$OPTIONS['precision'] ),
             ],
             [
                   'dayofweek' => 'Tue',
                   'img'       => './images/64x64/night/116.png',
-                  'high'      => 83.4,
-                  'low'       => 58,
+                  'high'      => number_format( 83.4,$OPTIONS['precision'] ),
+                  'low'       => number_format( 58,$OPTIONS['precision'] ),
             ],
       ],
 ];
 */
 
 header ('Content-Type: image/png');
-$canvas = @imagecreatetruecolor( $OPTIONS['width'],$OPTIONS['height'] );
+$width      = 1092;
+$height     = 448;
+$canvas     = @imagecreatetruecolor( $width,$height );
 
 // Canvas foreground
 list( $text_r,$text_g,$text_b ) = sscanf( $OPTIONS['fg_color'],"#%02x%02x%02x" );
@@ -282,7 +298,7 @@ imagettftext( $canvas,$OPTIONS['fg_size']+ 5,$OPTIONS['fg_angle'],$X,$Y,$text_co
 
 // Heading underline
 $X1   = 20;
-$X2   = ( $OPTIONS['width'] - 20 );
+$X2   = ( $width - 20 );
 $Y1   = $Y + 10;
 $Y2   = $Y1;
 imagesetthickness( $canvas,2 );
@@ -295,8 +311,8 @@ $Y    = $Y + 100;
 imagettftext( $canvas,$OPTIONS['fg_size']+45,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['temp'] );
 
 # Current desc
-$X    = $X - 10;
-$Y    = $Y + 22;
+$X    = $X;
+$Y    = $Y + 35;
 imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['desc'] );
 $X    = $X;
 $Y    = $Y + 22;
@@ -308,117 +324,61 @@ $X    = $X;
 $Y    = $Y + 22;
 imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['humidity'] );
 
-
-
-
-
 # Today heading
-$X    = 600;
+$X    = 400;
 $Y    = 118;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],'Today' );
+foreach( $RESPONSE_DATA['forecast'] as $index => $WEATHER_DATA ) {
 
-# Today image
-$X                = $X - 10;
-$Y                = $Y + 10;
-$current_img      = imagecreatefrompng( $RESPONSE_DATA['forecast'][0]['img'] );
-$src_x            = 0;
-$src_y            = 0;
-$dst_width        = 64;
-$dst_height       = 64;
-imagecopy( $canvas,$current_img,$X,$Y,$src_x,$src_y,$dst_width,$dst_height );
-
-# Today barometer
-$X    = 600 + 4;
-$Y    = $Y + $dst_height + 20;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['forecast'][0]['high'] );
-
-$X                = 600 + 14;
-$Y                = $Y + 20;
-$bar_height       = $RESPONSE_DATA['forecast'][0]['high'];
-$today_bar        = imagecreatetruecolor( 22,90 );
-$white            = imagecolorallocate( $today_bar,255,255,255 );
-imagefill( $today_bar,0,0,$white );
-imagecopy( $canvas,$today_bar,$X,$Y,$src_x,$src_y,22,90 );
-
-$X    = 600 + 6;
-$Y    = $Y + 120;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['forecast'][0]['low'] );
-
-
-
-
-
-# 2nd day heading
-$X    = 700;
-$Y    = 118;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['forecast'][1]['dayofweek'] );
-
-# 2nd day image
-$X                = $X - 10;
-$Y                = $Y + 10;
-$current_img      = imagecreatefrompng( $RESPONSE_DATA['forecast'][1]['img'] );
-$src_x            = 0;
-$src_y            = 0;
-$dst_width        = 64;
-$dst_height       = 64;
-imagecopy( $canvas,$current_img,$X,$Y,$src_x,$src_y,$dst_width,$dst_height );
-
-# 2nd day barometer
-$X    = 700 + 4;
-$Y    = $Y + $dst_height + 20;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['forecast'][1]['high'] );
-
-$X                = 700 + 14;
-$Y                = $Y + 20;
-$bar_height       = $RESPONSE_DATA['forecast'][1]['high'];
-$today_bar        = imagecreatetruecolor( 22,90 );
-$white            = imagecolorallocate( $today_bar,255,255,255 );
-imagefill( $today_bar,0,0,$white );
-imagecopy( $canvas,$today_bar,$X,$Y,$src_x,$src_y,22,90 );
-
-$X    = 700 + 6;
-$Y    = $Y + 120;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['forecast'][1]['low'] );
-
-
-
-
-
-#  3rd day heading
-$X    = 800;
-$Y    = 118;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['forecast'][2]['dayofweek'] );
-
-# 3rd day image
-$X                = $X - 10;
-$Y                = $Y + 10;
-$current_img      = imagecreatefrompng( $RESPONSE_DATA['forecast'][2]['img'] );
-$src_x            = 0;
-$src_y            = 0;
-$dst_width        = 64;
-$dst_height       = 64;
-imagecopy( $canvas,$current_img,$X,$Y,$src_x,$src_y,$dst_width,$dst_height );
-
-# 3rd day barometer
-$X    = 800 + 4;
-$Y    = $Y + $dst_height + 20;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['forecast'][2]['high'] );
-
-$X                = 800 + 14;
-$Y                = $Y + 20;
-$bar_height       = $RESPONSE_DATA['forecast'][2]['high'];
-$today_bar        = imagecreatetruecolor( 22,90 );
-$white            = imagecolorallocate( $today_bar,255,255,255 );
-imagefill( $today_bar,0,0,$white );
-imagecopy( $canvas,$today_bar,$X,$Y,$src_x,$src_y,22,90 );
-
-$X    = 800 + 6;
-$Y    = $Y + 120;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['forecast'][2]['low'] );
-
-
+      GenNextDayWeather( $WEATHER_DATA,$X,$Y,$OPTIONS,$canvas,$text_color );
+}
 
 # Output
 imagepng( $canvas,'out.png');
 imagedestroy( $canvas );
 
+function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$text_color ) {
+      $X                = $X + 100;
+      $Y                = $Y + 10;
+
+      # day text
+      imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['dayofweek'] );
+
+      # day image
+      $current_img      = imagecreatefrompng( $WEATHER_DATA['img'] );
+      $src_x            = 0;
+      $src_y            = 0;
+      $dst_width        = 64;
+      $img_height       = 64;
+      imagecopy( $canvas,$current_img,$X-5,$Y,$src_x,$src_y,$dst_width,$img_height );
+
+      # day barometer;
+      $Y    = $Y + $img_height + 20;
+      imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['high'] );
+
+      $ORIG_X           = $X;
+      $X                = $X + 14;
+      $Y                = $Y + 28;
+      $bar_height       = 130;
+      $bar_width        = 22;
+      $today_bar        = imagecreatetruecolor( $bar_width,$bar_height );
+      $white            = imagecolorallocate( $today_bar,255,255,255 );
+      $black            = imagecolorallocate( $today_bar,0,0,0 );
+      imagecolortransparent( $today_bar,$black );
+      ImageRectangleWithRoundedCorners( $today_bar,0,0,$bar_width,round( $WEATHER_DATA['high'] ),10,$white );
+      imagecopy( $canvas,$today_bar,$X,$Y,$src_x,$src_y,$bar_width,$bar_height );
+
+      $X    = $ORIG_X;
+      $Y    = $Y + $bar_height + 28;
+      imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['low'] );
+}
+
+function ImageRectangleWithRoundedCorners( &$im,$x1,$y1,$x2,$y2,$radius,$color ) {
+      // draw rectangle without corners
+      imagefilledrectangle( $im,$x1+$radius,$y1,$x2-$radius,$y2,$color );
+      imagefilledrectangle( $im,$x1,$y1+$radius,$x2,$y2-$radius,$color );
+      // draw circled corners
+      imagefilledellipse( $im,$x1+$radius,$y1+$radius,$radius*2,$radius*2,$color );
+      imagefilledellipse( $im,$x2-$radius,$y1+$radius,$radius*2,$radius*2,$color );
+      imagefilledellipse( $im,$x1+$radius,$y2-$radius,$radius*2,$radius*2,$color );
+      imagefilledellipse( $im,$x2-$radius,$y2-$radius,$radius*2,$radius*2,$color );
+}
