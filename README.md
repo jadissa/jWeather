@@ -14,7 +14,7 @@ Forecast.io died and I needed a weather monitor replacement
 - ```echo 'export WEATHER_KEY="API_KEY"' >>~/.bash_rc && source ~/.bash_rc```
 
 - ZSH users will need to follow an additional step
-- ```echo 'source ~/.bash_profile' >>~/.zshrc```
+- ```echo 'source ~/.bash_profile' >>~/.zshrc && source ~/.zshrc```
 
 - Open GeekTool
 - Drag new 'Shell' Geeklet to desktop
