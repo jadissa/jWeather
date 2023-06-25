@@ -356,7 +356,7 @@ function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$r,$g,$b ) {
 
       # day barometer;
       $Y    = $Y + $img_height + 20;
-      imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['high'] );
+      imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['high'] );
 
       $ORIG_X           = $X;
       $X                = $X + 14;
@@ -372,7 +372,7 @@ function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$r,$g,$b ) {
 
       $X    = $ORIG_X;
       $Y    = $Y + $bar_height + 28;
-      imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['low'] );
+      imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['low'] );
 }
 
 function ImageRectangleWithRoundedCorners( &$im,$x1,$y1,$x2,$y2,$radius,$color ) {
