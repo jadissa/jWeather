@@ -131,7 +131,7 @@ if( empty( $RAW_RESPONSE ) ) {
 
       exit;
 }
-
+//print'<pre>';print_r( $RAW_RESPONSE );print'</pre>';exit;
 // Review current day
 $CURRENT_DAY      = $RAW_RESPONSE['forecast']['forecastday'][0];
 $CURRENT_HOUR     = $CURRENT_DAY['hour'][ date( 'G' ) ];
@@ -141,10 +141,11 @@ $NEXT_HOUR        = $CURRENT_DAY['hour'][ date( 'G' ) + 1 ];
 $CONDITION        = [
       'tz_id'     => 0,
       'location'  => '',
+      'raw_temp'  => 0,
+      'temp'      => '',
       'img'       => '',
       'desc'      => '',
-      'temp'      => 0,
-      'humidty'   => 0,
+      'humidity'   => 0,
       'cloud'     => 0,
       'wind'      => 0,
 ];
@@ -170,9 +171,14 @@ $CONDITION['location']  = $RAW_RESPONSE['location']['name'];
 $CONDITION['raw_temp']  = $RAW_RESPONSE['current']['temp_' . $OPTIONS['heat_unit'] ];
 $CONDITION['img']       = $IMAGES[ $RAW_RESPONSE['current']['is_day'] ][ $CONDITION['code'] ];
 $CONDITION['temp']      = $RAW_RESPONSE['current']['temp_' . $OPTIONS['heat_unit'] ] . '' . $OPTIONS['degrees'];
-$CONDITION['humidty']   = $RAW_RESPONSE['current']['humidity'] . '' . $OPTIONS['percent'];
-$CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'] . '' . $OPTIONS['percent'];
+$CONDITION['humidity']   = $RAW_RESPONSE['current']['humidity'] . '' . $OPTIONS['percent'] . ' humidity';
+$CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'] . '' . $OPTIONS['percent'] . ' cloud coverage';
 $CONDITION['wind']      = $RAW_RESPONSE['current']['wind_dir'] . ', ' . $RAW_RESPONSE['current']['wind_' . $OPTIONS['speed_unit'] ] . ' ' . $OPTIONS['speed_unit'];
+
+if( $RAW_RESPONSE['current']['gust_' . $OPTIONS['speed_unit'] ] > 0 ) {
+
+      $CONDITION['wind'] = $CONDITION['wind'] . ' with gusts at ' . $RAW_RESPONSE['current']['gust_' . $OPTIONS['speed_unit'] ] . ' ' . $OPTIONS['speed_unit'];
+}
 
 // Response
 $RESPONSE_DATA = [
@@ -183,6 +189,8 @@ $RESPONSE_DATA = [
             'temp'      => $CONDITION['temp'],
             'desc'      => $CONDITION['desc'],
             'wind'      => "Wind {$CONDITION['wind']}",
+            'cloud'     => $CONDITION['cloud'],
+            'humidity'  => $CONDITION['humidity'],
       ],
       'forecast'  => [
 
@@ -288,11 +296,17 @@ imagettftext( $canvas,$OPTIONS['fg_size']+45,$OPTIONS['fg_angle'],$X,$Y,$text_co
 
 # Current desc
 $X    = $X - 10;
-$Y    = $Y + 40;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['desc'] );
+$Y    = $Y + 22;
+imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['desc'] );
 $X    = $X;
-$Y    = $Y + 40;
-imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['wind'] );
+$Y    = $Y + 22;
+imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['wind'] );
+$X    = $X;
+$Y    = $Y + 22;
+imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['cloud'] );
+$X    = $X;
+$Y    = $Y + 22;
+imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['humidity'] );
 
 
 
