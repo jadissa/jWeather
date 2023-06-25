@@ -24,7 +24,7 @@ Forecast.io died and I needed a weather monitor replacement
 - Resize the 'Image' window to desired size by dragging the bottom right corner
 - Set to run every 3600 seconds or less
 
-#### Note
+#### Notes
 - You may need to add permissions so the script can run:
 - ```chmod 775 /path/to/jWeather/run.sh```
 
@@ -42,5 +42,8 @@ https://github.com/jadissa/jWeather/issues
 
 ## Screenshots
 <p float="left">
-  <img src="sshot.png" width="400" />
+  <img src="screenshots/1.png" width="400" />
+  <img src="screenshots/2.png" width="400" />
+  <img src="screenshots/3.png" width="400" />
+  <img src="screenshots/4.png" width="400" />
 </p>
