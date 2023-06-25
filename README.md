@@ -13,6 +13,9 @@ Forecast.io died and I needed a weather monitor replacement
 - Generate your API key
 - ```echo 'export WEATHER_KEY="API_KEY"' >>~/.bash_rc && source ~/.bash_rc```
 
+- ZSH users will need to follow an additional step
+- ```echo 'source ~/.bash_profile' >>~/.zshrc```
+
 - Open GeekTool
 - Drag new 'Shell' Geeklet to desktop
 - Paste into the shell window: /path/to/jWeather/./run.sh

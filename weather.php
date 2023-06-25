@@ -4,18 +4,10 @@ require './vendor/autoload.php';
 
 /**
  *    Register App for use
- *    - Visit https://www.weatherapi.com/
- * 
- *    Generate your API key
- *    Make your environment aware of your API key
- *    - echo 'export WEATHER_KEY="API_KEY"' >>~/.bash_profile
- *    - re-launch your terminal
+ *    - https://www.weatherapi.com/
  * 
  *    Check out the API docs if needed
  *    - https://www.weatherapi.com/docs/
- *    
- *    ZSH users will need to follow an additional step
- *    - echo 'source ~/.bash_profile' >>~/.zshrc
  * 
  *    Finally, make any changes to the below options array
  *    - optional step
