@@ -198,6 +198,7 @@ $CONDITION['temp']      = $RAW_RESPONSE['current']['temp_'.$OPTIONS['heat_unit']
 $CONDITION['humidity']  = $RAW_RESPONSE['current']['humidity'].'%'." {$LANG['humidity']} ";
 $CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'].'%'." {$LANG['cloud_coverage']} ";
 $CONDITION['wind']      = $RAW_RESPONSE['current']['wind_dir']. ', '.$RAW_RESPONSE['current']['wind_'.$OPTIONS['speed_unit'] ].' '.$OPTIONS['speed_unit'];
+$CONDITION['direction'] = $direction;
 
 if( $RAW_RESPONSE['current']['gust_' . $OPTIONS['speed_unit'] ] > 0 ) {
 
@@ -215,6 +216,7 @@ $RESPONSE_DATA = [
             'wind'      => ucfirst( "{$LANG['wind']}" )." {$CONDITION['wind']}",
             'cloud'     => $CONDITION['cloud'],
             'humidity'  => $CONDITION['humidity'],
+            'direction' => $CONDITION['direction'],
       ],
       'forecast'  => [
 
@@ -321,6 +323,9 @@ imagesetthickness( $canvas,1 );
 $X    = $X;
 $Y    = $Y + 100;
 imagettftext( $canvas,$OPTIONS['fg_size']+45,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['temp'] );
+$X    = $X;
+$Y    = $Y + 22;
+imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['direction'] );
 
 # Current desc
 $X    = $X;
