@@ -1,7 +1,6 @@
 <?php
 require './vendor/autoload.php';
 
-
 /**
  *    Register App for use
  *    - https://www.weatherapi.com/
