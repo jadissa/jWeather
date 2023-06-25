@@ -11,7 +11,7 @@ Forecast.io died and I needed a weather monitor replacement
 - Register App for use
 - Visit weatherapi.com
 - Generate your API key
-- echo 'export WEATHER_KEY="3ed63caff9284a52aea122539231806"' >>~/.bash_rc && - source ~/.bash_rc
+- echo 'export WEATHER_KEY="API_KEY"' >>~/.bash_rc && - source ~/.bash_rc
 
 - Open GeekTool
 - Drag new 'Shell' Geeklet to desktop
