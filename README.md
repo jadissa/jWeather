@@ -20,6 +20,7 @@ Forecast.io died and I needed a weather monitor replacement
 
 - Drag new 'Image' Geeklet to desktop
 - Set local path to: /path/to/jWeather/out.png
+- run /path/to/jWeather/run.sh to generate out.png
 - Resize the 'Image' window to desired size by dragging the bottom right corner
 - Set to run every 3600 seconds or less
 
