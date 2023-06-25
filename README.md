@@ -18,14 +18,14 @@ Forecast.io died and I needed a weather monitor replacement
 - Paste into the shell window: /path/to/jWeather/./run.sh
 - Set to run every 3600 seconds
 
-- Note
-- You may need to add permissions so the script can run:
-- chmod 775 /path/to/jWeather/run.sh
-
 - Drag new 'Image' Geeklet to desktop
 - Set local path to: /path/to/jWeather/out.png
 - Resize the 'Image' window to desired size by dragging the bottom right corner
 - Set to run every 3600 seconds or less
+
+#### Note
+- You may need to add permissions so the script can run:
+- chmod 775 /path/to/jWeather/run.sh
 
 - At this point, you should be set!
 
@@ -40,3 +40,6 @@ Any system that has php installed
 https://github.com/jadissa/jWeather/issues
 
 ## Screenshots
+<p float="left">
+  <img src="sshot.png" width="400" />
+</p>
