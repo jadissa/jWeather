@@ -220,7 +220,7 @@ foreach( $RAW_RESPONSE['forecast']['forecastday'] as $i => $DAY_FORECAST ) {
 
 }
 
-/*
+
 // Test data
 $RESPONSE_DATA = [
       'heading'   => "Weather for some cool place",
@@ -252,7 +252,7 @@ $RESPONSE_DATA = [
             ],
       ],
 ];
-*/
+
 
 header ('Content-Type: image/png');
 $canvas = @imagecreate( $OPTIONS['width'],$OPTIONS['height'] );
