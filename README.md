@@ -24,7 +24,7 @@ Note:
 ```/path/to/php /path/to/jWeather/weather.php```
 
 Note:
-The following command can show you the path to your php install:
+- The following command can show you the path to your php install:
 ```which php```
 
 - Set the command to run every 3,600 seconds
