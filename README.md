@@ -43,7 +43,7 @@ Note:
 - Ensure your terminal has full disk access if issues are encountered
 
 Note:
-Full disk access for your terminal should not be necessary, as it has not been during my testing
+- Full disk access for your terminal should not be necessary, as it has not been during my testing
 
 #### Enable Weather Display
 - Drag new 'Image' Geeklet to your desktop
