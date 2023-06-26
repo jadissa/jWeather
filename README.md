@@ -13,7 +13,9 @@ Forecast.io died and I needed a weather monitor replacement
 - Paste your API key into the weather.php script $OPTIONS, near the top
 - Create a cron entry in your system for the weather script to run:
 - # Runs every hour
+- crontab -e
 - 0 * * * * php /path/to/jWeather/weather.php
+- Ensure your terminal has full disk access if issues are encountered
 
 - Open GeekTool
 - Drag new 'Image' Geeklet to desktop

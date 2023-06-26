@@ -1,6 +1,6 @@
 <?php
 
-require './vendor/autoload.php';
+require dirname(__FILE__).'/vendor/autoload.php';
 
 /**
  *    Register App for use
@@ -14,7 +14,7 @@ require './vendor/autoload.php';
  */
 $OPTIONS = [
       # see above
-      'api_key'         => '',
+      'api_key'         => '3ed63caff9284a52aea122539231806',
 
       # forecast days
       'days_to_fetch'   => 7,
@@ -45,7 +45,7 @@ $OPTIONS = [
 ];
 
 // Conditions
-$RESPONSE = file_get_contents( './weather_conditions.json' );
+$RESPONSE = file_get_contents( dirname(__FILE__).'/weather_conditions.json' );
 
 if( $RESPONSE === false ) {
 
@@ -74,12 +74,10 @@ foreach( $RAW_RESPONSE as $RESPONSE ) {
 
 // Images
 $IMAGES     = [
-      'day'       => [],
-      'night'     => [],
 ];
 
 // Day images
-$FILES      = scandir( './images/64x64/day',SCANDIR_SORT_ASCENDING );
+$FILES      = scandir( dirname(__FILE__).'/images/64x64/day',SCANDIR_SORT_ASCENDING );
 
 if( empty( $FILES ) ) {
 
@@ -94,12 +92,12 @@ foreach( $FILES as $i => $file ) {
 
       }
 
-      $IMAGES[1][ pathinfo( $file,PATHINFO_FILENAME ) ]     = "./images/64x64/day/{$file}";
+      $IMAGES[1][ pathinfo( $file,PATHINFO_FILENAME ) ]     = dirname(__FILE__)."/images/64x64/day/{$file}";
 
 }
 
 // Night images
-$FILES      = scandir( './images/64x64/night',SCANDIR_SORT_ASCENDING );
+$FILES      = scandir( dirname(__FILE__).'/images/64x64/night',SCANDIR_SORT_ASCENDING );
 
 if( empty( $FILES ) ) {
 
@@ -114,13 +112,13 @@ foreach( $FILES as $i => $file ) {
 
       }
 
-      $IMAGES[0][ pathinfo( $file,PATHINFO_FILENAME ) ]     = "./images/64x64/night/{$file}";
+      $IMAGES[0][ pathinfo( $file,PATHINFO_FILENAME ) ]     = dirname(__FILE__)."/images/64x64/night/{$file}";
 
 }
 
 // Weather
 # jWeather/vendor/guzzlehttp/guzzle/src/RequestOptions.php
-$H    = fopen( 'log.log','w' );
+
 $CLIENT = new GuzzleHttp\Client;
 $RESPONSE = $CLIENT->request( 'GET', 'http://api.weatherapi.com/v1/forecast.json', [
       'query' => [
@@ -147,21 +145,15 @@ if( empty( $RAW_RESPONSE ) ) {
       exit;
 }
 
-// Logging
-if( $H ) {
-
-      //fwrite( $H,json_encode( $RAW_RESPONSE,JSON_PRETTY_PRINT ) );
-}
-
 // Language
-if( is_file( "lang/{$OPTIONS['lang']}/index.php" ) ) {
+if( is_file( dirname(__FILE__)."/lang/{$OPTIONS['lang']}/index.php" ) ) {
 
-      require_once "lang/{$OPTIONS['lang']}/index.php";
+      require_once dirname(__FILE__)."/lang/{$OPTIONS['lang']}/index.php";
       $LANG = $LANG[ $OPTIONS['lang'] ];
 
 } else {
 
-      require_once 'lang/en/index.php';
+      require_once dirname(__FILE__).'/lang/en/index.php';
       $LANG = $LANG['en'];
 
 }
@@ -361,7 +353,7 @@ foreach( $RESPONSE_DATA['forecast'] as $index => $WEATHER_DATA ) {
 }
 
 # Output
-imagepng( $canvas,'out.png');
+imagepng( $canvas,dirname(__FILE__).'/out.png' );
 imagedestroy( $canvas );
 
 function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$r,$g,$b ) {
