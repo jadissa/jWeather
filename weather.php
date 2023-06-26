@@ -14,7 +14,7 @@ require dirname(__FILE__).'/vendor/autoload.php';
  */
 $OPTIONS = [
       # see above
-      'api_key'         => '3ed63caff9284a52aea122539231806',
+      'api_key'         => '',
 
       # forecast days
       'days_to_fetch'   => 7,
@@ -42,6 +42,8 @@ $OPTIONS = [
 
       # language
       'lang'            => 'en',
+
+      'timezone'        => 'America/Los_Angeles',
 ];
 
 // Conditions
@@ -117,8 +119,9 @@ foreach( $FILES as $i => $file ) {
 }
 
 // Weather
-# jWeather/vendor/guzzlehttp/guzzle/src/RequestOptions.php
+ini_set( 'date.timezone',$OPTIONS['timezone'] );
 
+# jWeather/vendor/guzzlehttp/guzzle/src/RequestOptions.php
 $CLIENT = new GuzzleHttp\Client;
 $RESPONSE = $CLIENT->request( 'GET', 'http://api.weatherapi.com/v1/forecast.json', [
       'query' => [
@@ -162,7 +165,12 @@ if( is_file( dirname(__FILE__)."/lang/{$OPTIONS['lang']}/index.php" ) ) {
 // Review current day
 $CURRENT_DAY      = $RAW_RESPONSE['forecast']['forecastday'][0];
 $CURRENT_HOUR     = $CURRENT_DAY['hour'][ date( 'G' ) ];
-$NEXT_HOUR        = $CURRENT_DAY['hour'][ date( 'G' ) + 1 ];
+
+if( $CURRENT_DAY['hour'][ date( 'G' ) + 1 ] ) {
+
+      $NEXT_HOUR  = $CURRENT_DAY['hour'][ date( 'G' ) + 1 ];
+
+} else $NEXT_HOUR = $CURRENT_DAY['hour'][0];
 
 // Overview 
 $CONDITION        = [
