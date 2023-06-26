@@ -1,4 +1,5 @@
 <?php
+
 require './vendor/autoload.php';
 
 /**
@@ -12,6 +13,9 @@ require './vendor/autoload.php';
  *    - optional step
  */
 $OPTIONS = [
+      # see above
+      'api_key'         => '',
+
       # forecast days
       'days_to_fetch'   => 7,
 
@@ -116,10 +120,11 @@ foreach( $FILES as $i => $file ) {
 
 // Weather
 # jWeather/vendor/guzzlehttp/guzzle/src/RequestOptions.php
+$H    = fopen( 'log.log','w' );
 $CLIENT = new GuzzleHttp\Client;
 $RESPONSE = $CLIENT->request( 'GET', 'http://api.weatherapi.com/v1/forecast.json', [
       'query' => [
-            'key'       => $_SERVER['WEATHER_KEY'],
+            'key'       => $OPTIONS['api_key'],
             'q'         => 'auto:ip',
             'days'      => $OPTIONS['days_to_fetch'],
             'aqi'       => 'yes',
@@ -140,6 +145,12 @@ $RAW_RESPONSE     = json_decode( $RAW_RESPONSE, true );
 if( empty( $RAW_RESPONSE ) ) {
 
       exit;
+}
+
+// Logging
+if( $H ) {
+
+      //fwrite( $H,json_encode( $RAW_RESPONSE,JSON_PRETTY_PRINT ) );
 }
 
 // Language
