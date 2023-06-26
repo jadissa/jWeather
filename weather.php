@@ -14,7 +14,7 @@ require dirname(__FILE__).'/vendor/autoload.php';
  */
 $OPTIONS = [
       # see above
-      'api_key'         => '',
+      'api_key'         => '3ed63caff9284a52aea122539231806',
 
       # forecast days
       'days_to_fetch'   => 7,
@@ -43,7 +43,7 @@ $OPTIONS = [
       # language
       'lang'            => 'en',
 
-      'timezone'        => 'America/Los_Angeles',
+      'timezone'        => 'America/Ciudad_Juarez',#'America/Los_Angeles',
 ];
 
 // Conditions
@@ -170,7 +170,12 @@ if( $CURRENT_DAY['hour'][ date( 'G' ) + 1 ] ) {
 
       $NEXT_HOUR  = $CURRENT_DAY['hour'][ date( 'G' ) + 1 ];
 
-} else $NEXT_HOUR = $CURRENT_DAY['hour'][0];
+} else {
+
+      $NEXT_DAY   = $RAW_RESPONSE['forecast']['forecastday'][1];
+      $NEXT_HOUR  = $NEXT_DAY['hour'][0];
+
+}
 
 // Overview 
 $CONDITION        = [
