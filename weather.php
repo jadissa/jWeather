@@ -10,7 +10,6 @@ require dirname(__FILE__).'/vendor/autoload.php';
  *    - https://www.weatherapi.com/docs/
  * 
  *    Finally, make any changes to the below options array
- *    - optional step
  */
 $OPTIONS = [
       # see above
@@ -43,7 +42,7 @@ $OPTIONS = [
       # language
       'lang'            => 'en',
 
-      'timezone'        => 'America/Ciudad_Juarez',#'America/Los_Angeles',
+      'timezone'        => 'America/Los_Angeles',
 ];
 
 // Conditions
