@@ -14,7 +14,7 @@ require dirname(__FILE__).'/vendor/autoload.php';
  */
 $OPTIONS = [
       # see above
-      'api_key'         => '3ed63caff9284a52aea122539231806',
+      'api_key'         => '',
 
       # forecast days
       'days_to_fetch'   => 7,
@@ -166,7 +166,7 @@ if( is_file( dirname(__FILE__)."/lang/{$OPTIONS['lang']}/index.php" ) ) {
 $CURRENT_DAY      = $RAW_RESPONSE['forecast']['forecastday'][0];
 $CURRENT_HOUR     = $CURRENT_DAY['hour'][ date( 'G' ) ];
 
-if( $CURRENT_DAY['hour'][ date( 'G' ) + 1 ] ) {
+if( isset( $CURRENT_DAY['hour'][ date( 'G' ) + 1 ] ) ) {
 
       $NEXT_HOUR  = $CURRENT_DAY['hour'][ date( 'G' ) + 1 ];
 
