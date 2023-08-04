@@ -2,4 +2,3 @@
 composer.lock
 composer.phar
 out.png
-vendor/*
