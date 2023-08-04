@@ -7,6 +7,9 @@
 ## Why
 Forecast.io died and I needed a weather monitor replacement
 
+## Requirements
+php,composer
+
 ## How
 Note:
 - Requires GeekTool, which can be downloaded from https://www.tynsoe.org/geektool/
