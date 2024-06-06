@@ -16,7 +16,7 @@ $OPTIONS = [
       'api_key'         => '',
 
       # forecast days
-      'days_to_fetch'   => 7,
+      'days_to_fetch'   => 3,
 
       # text color
       'fg_color'        => '#c62714',
@@ -187,6 +187,7 @@ $CONDITION        = [
       'humidity'   => 0,
       'cloud'     => 0,
       'wind'      => 0,
+      'alert'     => '',
 ];
 
 if( $NEXT_HOUR['temp_f'] > $CURRENT_HOUR['temp_f'] ) {
@@ -220,9 +221,19 @@ if( $RAW_RESPONSE['current']['gust_' . $OPTIONS['speed_unit'] ] > 0 ) {
       $CONDITION['wind'] = "{$CONDITION['wind']}, {$LANG['gusts_at']} ".$RAW_RESPONSE['current']['gust_'.$OPTIONS['speed_unit'] ]. ' '.$OPTIONS['speed_unit'];
 }
 
+// Alert
+foreach( $RAW_RESPONSE['alerts'] as $ALERT ) {
+
+      foreach( $ALERT  as $ALERT_DATA ) {
+
+            $CONDITION['alert'] = $LANG['alert'].': '.$ALERT_DATA['event'];
+      }
+}
+
 // Response
 $RESPONSE_DATA = [
       'heading'   => ucfirst( "{$LANG['weather_for']}" )." {$CONDITION['location']}",
+      'alert'     => $CONDITION['alert'],
       'current'   => [
             'img'       => $CONDITION['img'],
             'raw_temp'  => $CONDITION['raw_temp'],
@@ -355,6 +366,9 @@ imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_col
 $X    = $X;
 $Y    = $Y + 22;
 imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['humidity'] );
+$X    = $X;
+$Y    = $Y + 22;
+imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['alert'] );
 
 # Today heading
 $X    = 400;

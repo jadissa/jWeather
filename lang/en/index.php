@@ -8,4 +8,5 @@ $LANG['en'] = [
 	'increasing'		=> 'and increasing',
 	'weather_for'		=> 'weather for',
 	'wind'				=> 'wind',
+	'alert'				=> 'alert',
 ];
