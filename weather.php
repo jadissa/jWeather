@@ -13,36 +13,44 @@ require dirname(__FILE__).'/vendor/autoload.php';
  */
 $OPTIONS = [
       # see above
-      'api_key'         => '',
+      'api_key'               => '',
 
       # forecast days
-      'days_to_fetch'   => 3,
+      'days_to_fetch'         => 3,
 
       # text color
-      'fg_color'        => '#c62714',
+      'fg_color'              => '#ffffff',
 
       # text font
-      'fg_font'         => '/System/Library/Fonts/Supplemental/Arial Bold.ttf',
+      'fg_font'               => '/System/Library/Fonts/Supplemental/Brush Script.ttf',
 
       # text size
-      'fg_size'         => 20,
+      'fg_size'               => 35,
+
+      # text horizontal spacing
+      'fg_horiz_spacing'      => 45,
+
+      # forecast spacing
+      'fc_horiz_spacing'      => 150,
 
       # text angle
-      'fg_angle'        => 0,
+      'fg_angle'              => 0,
 
       # f or c
-      'heat_unit'       => 'f',
+      'heat_unit'             => 'f',
 
       # mph or kph
-      'speed_unit'      => 'mph',
+      'speed_unit'            => 'mph',
 
       # rounding specific
-      'precision'       => 1,
+      'precision'             => 1,
 
       # language
-      'lang'            => 'en',
+      'lang'                  => 'en',
 
-      'timezone'        => 'America/Los_Angeles',
+      # X,Y coordinates for location
+      'long'                  => '33.74496403551791',
+      'lat'                   => '-117.87084058827894',
 ];
 
 // Conditions
@@ -118,14 +126,15 @@ foreach( $FILES as $i => $file ) {
 }
 
 // Weather
-ini_set( 'date.timezone',$OPTIONS['timezone'] );
+// This should really be set in php.ini
+ini_set( 'date.timezone','America/Los_Angeles' );
 
 # jWeather/vendor/guzzlehttp/guzzle/src/RequestOptions.php
 $CLIENT = new GuzzleHttp\Client;
 $RESPONSE = $CLIENT->request( 'GET', 'http://api.weatherapi.com/v1/forecast.json', [
       'query' => [
             'key'       => $OPTIONS['api_key'],
-            'q'         => 'auto:ip',
+            'q'         => $OPTIONS['long'].','.$OPTIONS['lat'],
             'days'      => $OPTIONS['days_to_fetch'],
             'aqi'       => 'yes',
             'alerts'    => 'yes',
@@ -160,7 +169,7 @@ if( is_file( dirname(__FILE__)."/lang/{$OPTIONS['lang']}/index.php" ) ) {
 
 }
 
-//print'<pre>';print_r( $RAW_RESPONSE );print'</pre>';exit;
+#print'<pre>';print_r( $RAW_RESPONSE );print'</pre>';exit;
 // Review current day
 $CURRENT_DAY      = $RAW_RESPONSE['forecast']['forecastday'][0];
 $CURRENT_HOUR     = $CURRENT_DAY['hour'][ date( 'G' ) ];
@@ -280,42 +289,6 @@ foreach( $RAW_RESPONSE['forecast']['forecastday'] as $i => $DAY_FORECAST ) {
 
 }
 
-/*
-// Test data
-$RESPONSE_DATA = [
-      'heading'   => "Weather for some cool place",
-      'current'   => [
-            'img'       => './images/64x64/night/116.png',
-            'raw_temp'  => '84',
-            'temp'      => '84°',
-            'desc'      => 'Partly cloudy, feels like 76°',
-            'wind'      => 'Wind W, 5 mph',
-            'cloud'     => '10% cloud coverage',
-            'humidity'  => '6% humidity',
-      ],
-      'forecast'  => [
-            [
-                  'dayofweek' => 'Sun',
-                  'img'       => './images/64x64/night/116.png',
-                  'high'      => number_format( 86.8,$OPTIONS['precision'] ),
-                  'low'       => number_format( 59.8,$OPTIONS['precision'] ),
-            ],
-            [
-                  'dayofweek' => 'Mon',
-                  'img'       => './images/64x64/night/113.png',
-                  'high'      => number_format( 78.2,$OPTIONS['precision'] ),
-                  'low'       => number_format( 42.5,$OPTIONS['precision'] ),
-            ],
-            [
-                  'dayofweek' => 'Tue',
-                  'img'       => './images/64x64/night/116.png',
-                  'high'      => number_format( 83.4,$OPTIONS['precision'] ),
-                  'low'       => number_format( 58,$OPTIONS['precision'] ),
-            ],
-      ],
-];
-*/
-
 header ('Content-Type: image/png');
 $width      = 1092;
 $height     = 448;
@@ -350,28 +323,28 @@ $X    = $X;
 $Y    = $Y + 100;
 imagettftext( $canvas,$OPTIONS['fg_size']+45,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['temp'] );
 $X    = $X;
-$Y    = $Y + 22;
+$Y    = $Y + $OPTIONS['fg_horiz_spacing'];
 imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['direction'] );
 
 # Current desc
 $X    = $X;
-$Y    = $Y + 35;
+$Y    = $Y + $OPTIONS['fg_horiz_spacing'];
 imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['desc'] );
 $X    = $X;
-$Y    = $Y + 22;
+$Y    = $Y + $OPTIONS['fg_horiz_spacing'];
 imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['wind'] );
 $X    = $X;
-$Y    = $Y + 22;
+$Y    = $Y + $OPTIONS['fg_horiz_spacing'];
 imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['cloud'] );
 $X    = $X;
-$Y    = $Y + 22;
+$Y    = $Y + $OPTIONS['fg_horiz_spacing'];
 imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['current']['humidity'] );
 $X    = $X;
-$Y    = $Y + 22;
+$Y    = $Y + $OPTIONS['fg_horiz_spacing'];
 imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$RESPONSE_DATA['alert'] );
 
 # Today heading
-$X    = 400;
+$X    = $width / 2;
 $Y    = 118;
 foreach( $RESPONSE_DATA['forecast'] as $index => $WEATHER_DATA ) {
 
@@ -383,7 +356,7 @@ imagepng( $canvas,dirname(__FILE__).'/out.png' );
 imagedestroy( $canvas );
 
 function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$r,$g,$b ) {
-      $X                = $X + 100;
+      $X                = $X + $OPTIONS['fc_horiz_spacing'];
       $Y                = $Y + 10;
 
       # text color
