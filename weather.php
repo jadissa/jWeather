@@ -1,5 +1,9 @@
 <?php
 
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
 require dirname(__FILE__).'/vendor/autoload.php';
 
 /**
@@ -19,7 +23,8 @@ $OPTIONS = [
       'days_to_fetch'         => 3,
 
       # text color
-      'fg_color'              => '#ffffff',
+      # note that true black will not work. try 020002
+      'fg_color'              => '#c64fff',
 
       # text font
       'fg_font'               => '/System/Library/Fonts/Supplemental/Brush Script.ttf',
@@ -346,9 +351,11 @@ imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_col
 # Today heading
 $X    = $width / 2;
 $Y    = 118;
+
 foreach( $RESPONSE_DATA['forecast'] as $index => $WEATHER_DATA ) {
 
       GenNextDayWeather( $WEATHER_DATA,$X,$Y,$OPTIONS,$canvas,$text_r,$text_g,$text_b );
+
 }
 
 # Output
@@ -365,39 +372,44 @@ function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$r,$g,$b ) {
       # day text
       imagettftext( $canvas,$OPTIONS['fg_size'],$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['dayofweek'] );
 
-      # day image
+      # Draw temp image
       $current_img      = imagecreatefrompng( $WEATHER_DATA['img'] );
+
       $src_x            = 0;
       $src_y            = 0;
       $dst_width        = 64;
       $img_height       = 64;
       imagecopy( $canvas,$current_img,$X-5,$Y,$src_x,$src_y,$dst_width,$img_height );
 
-      # day barometer;
+      # Draw high temperature
       $Y    = $Y + $img_height + 20;
-      imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['high'].'°' );
+      imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['high'].' °' );
 
       $ORIG_X           = $X;
       $X                = $X + 14;
       $Y                = $Y + 28;
-      $bar_height       = round( $WEATHER_DATA['high'] );
+      $bar_height       = 100;
       $bar_width        = 22;
       $today_bar        = imagecreatetruecolor( $bar_width,$bar_height );
       $background_color = imagecolorallocate( $today_bar,$r,$g,$b );
       $black            = imagecolorallocate( $today_bar,0,0,0 );
       imagecolortransparent( $today_bar,$black );
+
+      # Draw temperature bar
       ImageRectangleWithRoundedCorners( $today_bar,0,0,$bar_width,round( $WEATHER_DATA['high'] ),10,$background_color );
       imagecopy( $canvas,$today_bar,$X,$Y,$src_x,$src_y,$bar_width,$bar_height );
 
+      # Draw low temperature
       $X    = $ORIG_X;
-      $Y    = $Y + $bar_height + 40;
-      imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['low'].'°' );
+      $Y    = $Y + 150;
+      imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['low'].' °' );
 }
 
 function ImageRectangleWithRoundedCorners( &$im,$x1,$y1,$x2,$y2,$radius,$color ) {
       // draw rectangle without corners
       imagefilledrectangle( $im,$x1+$radius,$y1,$x2-$radius,$y2,$color );
       imagefilledrectangle( $im,$x1,$y1+$radius,$x2,$y2-$radius,$color );
+
       // draw circled corners
       imagefilledellipse( $im,$x1+$radius,$y1+$radius,$radius*2,$radius*2,$color );
       imagefilledellipse( $im,$x2-$radius,$y1+$radius,$radius*2,$radius*2,$color );
