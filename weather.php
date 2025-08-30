@@ -24,7 +24,7 @@ $OPTIONS = [
 
       # text color
       # note that true black will not work. try 020002
-      'fg_color'              => '#c64fff',
+      'fg_color'              => '#020002',
 
       # text font
       'fg_font'               => '/System/Library/Fonts/Supplemental/Brush Script.ttf',
@@ -54,8 +54,46 @@ $OPTIONS = [
       'lang'                  => 'en',
 
       # X,Y coordinates for location
-      'long'                  => '33.74496403551791',
-      'lat'                   => '-117.87084058827894',
+      'long'                  => '31.846848732688155',
+      'lat'                   => '-106.5798192153439',
+];
+
+$BITCH_ASS_CODES = [];
+$WEATHER_CODES = [
+      'sunny'                 => [1000,],
+      'cloudy'                => [1003,1006,1009,],
+      'fog'                   => [1030,1135,1147,],
+      'rain'                  => [1063,1150,1153,1180,1183,1186,1189,1192,1195,1240,1243,1246,1255,1258,1273,1276,],
+      'snow'                  => [1066,1114,1117,1210,1213,1216,1219,1222,1225,1255,1258,1279,1282,],
+      'sleet'                 => [1069,1168,1171,1198,1201,1204,1207,1249,1252,1072,1264,1261,1237,],
+      'lightning'             => [1087,1273,1276,1279,1282,],
+];
+
+foreach( $WEATHER_CODES as $weather_desc => $CODES ) {
+
+      foreach ( $CODES as $weather_code ) {
+
+            if( empty( $BITCH_ASS_CODES[ $weather_code ] ) ) {
+
+                  $BITCH_ASS_CODES[ $weather_code ] = [];
+
+            }
+
+            array_push( $BITCH_ASS_CODES[ $weather_code ], $weather_desc );
+
+      }
+
+}
+$WEATHER_CODES = $BITCH_ASS_CODES;
+
+$DRAW_FUNCTIONS = [
+    'sunny'                   => 'draw_sunny',
+    'cloudy'                  => 'draw_cloudy',
+    'fog'                     => 'draw_fog',
+    'rain'                    => 'draw_rain',
+    'snow'                    => 'draw_snow',
+    'sleet'                   => 'draw_sleet',
+    'lightning'               => 'draw_lightning',
 ];
 
 // Conditions
@@ -83,50 +121,6 @@ foreach( $RAW_RESPONSE as $RESPONSE ) {
             'night'     => $RESPONSE['night'],
             'icon'      => $RESPONSE['icon'],
       ];
-
-}
-
-// Images
-$IMAGES     = [
-];
-
-// Day images
-$FILES      = scandir( dirname(__FILE__).'/images/64x64/day',SCANDIR_SORT_ASCENDING );
-
-if( empty( $FILES ) ) {
-
-      exit;
-}
-
-foreach( $FILES as $i => $file ) {
-
-      if( $file == '.' or $file == '..' ) {
-
-            continue;
-
-      }
-
-      $IMAGES[1][ pathinfo( $file,PATHINFO_FILENAME ) ]     = dirname(__FILE__)."/images/64x64/day/{$file}";
-
-}
-
-// Night images
-$FILES      = scandir( dirname(__FILE__).'/images/64x64/night',SCANDIR_SORT_ASCENDING );
-
-if( empty( $FILES ) ) {
-
-      exit;
-}
-
-foreach( $FILES as $i => $file ) {
-
-      if( $file == '.' or $file == '..' ) {
-
-            continue;
-
-      }
-
-      $IMAGES[0][ pathinfo( $file,PATHINFO_FILENAME ) ]     = dirname(__FILE__)."/images/64x64/night/{$file}";
 
 }
 
@@ -223,7 +217,6 @@ if( $RAW_RESPONSE['current']['is_day'] ) {
 $CONDITION['tz_id']     = $RAW_RESPONSE['location']['tz_id'];
 $CONDITION['location']  = $RAW_RESPONSE['location']['name'];
 $CONDITION['raw_temp']  = $RAW_RESPONSE['current']['temp_'.$OPTIONS['heat_unit'] ];
-$CONDITION['img']       = $IMAGES[ $RAW_RESPONSE['current']['is_day'] ][ $CONDITION['code'] ];
 $CONDITION['temp']      = $RAW_RESPONSE['current']['temp_'.$OPTIONS['heat_unit'] ].'°';
 $CONDITION['humidity']  = $RAW_RESPONSE['current']['humidity'].'%'." {$LANG['humidity']} ";
 $CONDITION['cloud']     = $RAW_RESPONSE['current']['cloud'].'%'." {$LANG['cloud_coverage']} ";
@@ -233,6 +226,7 @@ $CONDITION['direction'] = $direction;
 if( $RAW_RESPONSE['current']['gust_' . $OPTIONS['speed_unit'] ] > 0 ) {
 
       $CONDITION['wind'] = "{$CONDITION['wind']}, {$LANG['gusts_at']} ".$RAW_RESPONSE['current']['gust_'.$OPTIONS['speed_unit'] ]. ' '.$OPTIONS['speed_unit'];
+
 }
 
 // Alert
@@ -249,7 +243,6 @@ $RESPONSE_DATA = [
       'heading'   => ucfirst( "{$LANG['weather_for']}" )." {$CONDITION['location']}",
       'alert'     => $CONDITION['alert'],
       'current'   => [
-            'img'       => $CONDITION['img'],
             'raw_temp'  => $CONDITION['raw_temp'],
             'temp'      => $CONDITION['temp'],
             'desc'      => $CONDITION['desc'],
@@ -263,7 +256,7 @@ $RESPONSE_DATA = [
       ],
 ];
 
-// Highs/Lows
+// Highs/Lows/images
 foreach( $RAW_RESPONSE['forecast']['forecastday'] as $i => $DAY_FORECAST ) {
 
       $RESPONSE_DATA['forecast'][ $i ] = [
@@ -273,13 +266,31 @@ foreach( $RAW_RESPONSE['forecast']['forecastday'] as $i => $DAY_FORECAST ) {
             'low'       => 0,
       ];
 
-      if( !( $i > 0 ) ) {
+      $CURRENT_WEATHER_CODITIONS    = $WEATHER_CODES[ $DAY_FORECAST['day']['condition']['code'] ];
+      array_push($CURRENT_WEATHER_CODITIONS, 'sunny' );
 
-            $RESPONSE_DATA['forecast'][ $i ]['img']   = $IMAGES[ $RAW_RESPONSE['current']['is_day'] ][ $CONDITIONS[ $DAY_FORECAST['day']['condition']['code'] ]['icon'] ];
+      // Create image for each day
+      $image = imagecreatetruecolor( 64,64 );
+      imagealphablending($image, false); // Disable alpha blending
+      $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127); // Allocate a transparent color
+      imagefill($image, 0, 0, $transparent); // Fill the background with transparency
+      imagesavealpha($image, true); // Save the alpha channel
 
-      } else {
+      foreach( $DRAW_FUNCTIONS as $condition => $function ) {
 
-            $RESPONSE_DATA['forecast'][ $i ]['img']   = $IMAGES[1][ $CONDITIONS[ $DAY_FORECAST['day']['condition']['code'] ]['icon'] ];
+          if( in_array( $condition,$CURRENT_WEATHER_CODITIONS ) ) {
+
+                  $image = $function( $image );
+
+                  $image_path = dirname(__FILE__).'/images/'.$condition.'.png';
+                  imagepng( $image,$image_path );
+
+                  $RESPONSE_DATA['forecast'][ $i ]['img'] = $image_path;
+
+            }
+
+            imagedestroy($image);
+
       }
 
       foreach( $DAY_FORECAST['hour'] as $HOUR_FORECAST ) {
@@ -382,7 +393,7 @@ function GenNextDayWeather( $WEATHER_DATA,&$X,$Y,$OPTIONS,$canvas,$r,$g,$b ) {
       imagecopy( $canvas,$current_img,$X-5,$Y,$src_x,$src_y,$dst_width,$img_height );
 
       # Draw high temperature
-      $Y    = $Y + $img_height + 20;
+      $Y    = $Y + $img_height + 40;
       imagettftext( $canvas,$OPTIONS['fg_size']-5,$OPTIONS['fg_angle'],$X,$Y,$text_color,$OPTIONS['fg_font'],$WEATHER_DATA['high'].' °' );
 
       $ORIG_X           = $X;
@@ -415,4 +426,120 @@ function ImageRectangleWithRoundedCorners( &$im,$x1,$y1,$x2,$y2,$radius,$color )
       imagefilledellipse( $im,$x2-$radius,$y1+$radius,$radius*2,$radius*2,$color );
       imagefilledellipse( $im,$x1+$radius,$y2-$radius,$radius*2,$radius*2,$color );
       imagefilledellipse( $im,$x2-$radius,$y2-$radius,$radius*2,$radius*2,$color );
+}
+
+function draw_sunny( $image ) {
+      // Create a true-color image with a transparent background
+      $image = imagecreatetruecolor( 64,64 );
+      imagealphablending($image, false); // Disable alpha blending
+      $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127); // Allocate a transparent color
+      imagefill($image, 0, 0, $transparent); // Fill the background with transparency
+      imagesavealpha($image, true); // Save the alpha channel
+
+      $yellow = imagecolorallocate($image, 255, 223, 0);
+      imagefilledellipse( $image, 32, 32, 40, 40, $yellow );
+
+      return $image;
+}
+
+
+function draw_cloudy( $image ) {
+      // Create a true-color image with a transparent background
+      $image = imagecreatetruecolor( 64,64 );
+      imagealphablending($image, false); // Disable alpha blending
+      $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127); // Allocate a transparent color
+      imagefill($image, 0, 0, $transparent); // Fill the background with transparency
+      imagesavealpha($image, true); // Save the alpha channel
+
+      $gray = imagecolorallocate($image, 150, 150, 150);
+      $dark_gray = imagecolorallocate($image, 100, 100, 100);
+
+      // Draw multiple overlapping circles for a cloud shape
+      imagefilledellipse($image, 22, 36, 30, 20, $gray);
+      imagefilledellipse($image, 42, 34, 30, 24, $gray);
+      imagefilledellipse($image, 32, 28, 36, 26, $gray);
+
+      // Give it a slightly darker bottom for definition
+      imagefilledellipse($image, 22, 40, 30, 20, $dark_gray);
+      imagefilledellipse($image, 42, 38, 30, 24, $dark_gray);
+
+      return $image;
+}
+
+function draw_rain( $image ) {
+      // Create a true-color image with a transparent background
+      $image = imagecreatetruecolor( 64,64 );
+      imagealphablending($image, false); // Disable alpha blending
+      $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127); // Allocate a transparent color
+      imagefill($image, 0, 0, $transparent); // Fill the background with transparency
+      imagesavealpha($image, true); // Save the alpha channel
+
+      $blue = imagecolorallocate($image, 0, 128, 255);
+
+      // Draw multiple diagonal lines for raindrops
+      $raindrop_count = 10;
+      for ($i = 0; $i < $raindrop_count; $i++) {
+            $x = mt_rand(10, 54);
+            $y = mt_rand(40, 60);
+            imageline($image, $x, $y, $x + 5, $y - 10, $blue);
+      }
+
+      return $image;
+}
+
+function draw_snow( $image ) {
+      // Create a true-color image with a transparent background
+      $image = imagecreatetruecolor( 64,64 );
+      imagealphablending($image, false); // Disable alpha blending
+      $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127); // Allocate a transparent color
+      imagefill($image, 0, 0, $transparent); // Fill the background with transparency
+      imagesavealpha($image, true); // Save the alpha channel
+
+      $white = imagecolorallocate($image, 255, 255, 255);
+
+      // Draw snowflakes as small circles and lines
+      $flake_count = 15;
+      for ($i = 0; $i < $flake_count; $i++) {
+            $x = mt_rand(10, 54);
+            $y = mt_rand(40, 60);
+            imagefilledellipse($image, $x, $y, 3, 3, $white);
+      }
+
+      return $image;
+}
+
+function draw_sleet( $image ) {
+      // Draw a mix of snow (white dots) and rain (blue lines)
+      draw_snow($image);
+      draw_rain($image);
+
+      return $image;
+}
+
+function draw_fog( $image ) {
+    // Draw horizontal, translucent gray bands for fog
+    $fog_color = imagecolorallocatealpha($image, 200, 200, 200, 60); // Semi-transparent
+    for ($y = 45; $y < 64; $y += 5) {
+        imagefilledrectangle($image, 0, $y, $width, $y + 2, $fog_color);
+    }
+
+    return $image;
+}
+
+function draw_lightning( $image ) {
+
+      $white = imagecolorallocate($image, 255, 255, 255);
+
+      // Draw a zigzag line for lightning
+      $points = [
+            32, 25,
+            40, 40,
+            30, 40,
+            38, 55,
+      ];
+      imageline($image, $points[0], $points[1], $points[2], $points[3], $white);
+      imageline($image, $points[2], $points[3], $points[4], $points[5], $white);
+      imageline($image, $points[4], $points[5], $points[6], $points[7], $white);
+
+      return $image;
 }
