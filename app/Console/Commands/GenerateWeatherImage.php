@@ -133,7 +133,7 @@ class GenerateWeatherImage extends Command
 
         // Current temperature
         $tempText = $current["temp_{$heat_unit}"]. '°';
-        imagettftext($image, $font_size+8, 0, $leftMargin + 70, $currentY-22, $font_color, $font_family, $tempText);
+        imagettftext($image, $font_size+8, 0, $leftMargin + 80, $currentY-22, $font_color, $font_family, $tempText);
 
         // Alert data
         $currentY += 40;
@@ -296,20 +296,17 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( str_contains( $conditionText, 'cloud' ) and $cloudy_pct <= 50 ) {
+        if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
 
-            imagefilledellipse( $image,$x + 10,$y - 10,64-6,20,$this->grey );
-            imagefilledellipse( $image,$x + 10,$y - 10,64-6,24,$this->grey );
-            imagefilledellipse( $image,$x + 10,$y - 10,64,26,$this->grey );
+            imagefilledellipse( $image,$x + 18,$y - 10,64-6,40,$this->grey );
+            imagefilledellipse( $image,$x + 15,$y - 10,64,26,$this->grey );
 
-        } elseif( str_contains($conditionText, 'overcast' ) or $cloudy_pct >= 50 ) {
+        }
 
-            imagefilledellipse( $image,$x + 10,$y - 10,64-6,20,$this->grey );
-            imagefilledellipse( $image,$x + 10,$y - 10,64-6,24,$this->grey );
-            imagefilledellipse( $image,$x + 10,$y - 10,64,26,$this->grey );
+        if( $cloudy_pct >= 50 ) {
 
-            imagefilledellipse( $image,$x-10,$y,64,20,$this->dark_grey );
-            imagefilledellipse( $image,$x + 10,$y,64-9,28,$this->dark_grey );
+            imagefilledellipse( $image,$x-10,$y+9,45,22,$this->dark_grey );
+            imagefilledellipse( $image,$x + 20,$y,64-9,42,$this->dark_grey );
 
         }
 
@@ -383,22 +380,20 @@ class GenerateWeatherImage extends Command
     {
 
         //$conditionText = 'sun, rain, lightning, cloud';
-        //var_dump( $iterator, $conditionText );
+        var_dump( $iterator, $conditionText,$cloudy_pct );
         // Sun
         imagefilledellipse( $image,$x + 25,$y + 15,32,32,$this->yellow );
 
         // Clouds
-        if( str_contains( $conditionText, 'cloud' ) and $cloudy_pct <= 50 ) {
+        if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
 
             imagefilledellipse( $image,$x + 40,$y + 10,30,20,$this->grey );
             imagefilledellipse( $image,$x + 40,$y + 10,30,24,$this->grey );
             imagefilledellipse( $image,$x + 40,$y + 10,36,26,$this->grey );
 
-        } elseif( str_contains($conditionText, 'overcast' ) or $cloudy_pct >= 50 ) {
+        }
 
-            imagefilledellipse( $image,$x + 40,$y + 10,30,20,$this->grey );
-            imagefilledellipse( $image,$x + 40,$y + 10,30,24,$this->grey );
-            imagefilledellipse( $image,$x + 40,$y + 10,36,26,$this->grey );
+        if( $cloudy_pct >= 50 ) {
 
             imagefilledellipse( $image,$x + 20,$y + 25,25,15,$this->dark_grey );
             imagefilledellipse( $image,$x + 40,$y + 18,30,24,$this->dark_grey );
