@@ -129,23 +129,26 @@ class GenerateWeatherImage extends Command
         $leftMargin = 20;
 
         // Draw current image
-        $this->drawCurrentIcon( $image,$current['condition']['text'], $leftMargin + 32,$currentY-32 );
+        $this->drawCurrentIcon( $image,$current['condition']['text'],$current['cloud'],$leftMargin + 32,$currentY-32 );
 
         // Current temperature
         $tempText = $current["temp_{$heat_unit}"]. '°';
         imagettftext($image, $font_size+8, 0, $leftMargin + 70, $currentY-22, $font_color, $font_family, $tempText);
 
-        $currentY += 40;
-
         // Alert data
+        $currentY += 40;
         if (isset($data['alerts']['alert'][0])) {
             $alertText = "Alert: " . $data['alerts']['alert'][0]['event'];
             imagettftext($image, $font_size, 0, $leftMargin, $currentY, $font_color, $font_family, $alertText);
         }
 
+        // Clouds
         $currentY += 40;
+        $cloud_text = "Cloud Coverage: " . $current['cloud'] . "%";
+        imagettftext($image, $font_size-5, 0, $leftMargin, $currentY, $font_color, $font_family, $cloud_text);
 
         // Wind
+        $currentY += 40;
         $windText = "Wind: " . $current["wind_{$speed_unit}"] . " $speed_unit " . $current['wind_dir'];
 
         if( $current["gust_{$speed_unit}"] > 0 ) {
@@ -156,9 +159,8 @@ class GenerateWeatherImage extends Command
 
         imagettftext($image, $font_size-5, 0, $leftMargin, $currentY, $font_color, $font_family, $windText);
 
-        $currentY += 40;
-
         // Humidity
+        $currentY += 40;
         $humidityText = "Humidity: " . $current['humidity'] . "%";
         imagettftext($image, $font_size-5, 0, $leftMargin, $currentY, $font_color, $font_family, $humidityText);
 
@@ -247,7 +249,7 @@ class GenerateWeatherImage extends Command
         imagedestroy($image);
     }
 
-    private function drawCurrentIcon( $image,$conditionText,$x,$y )
+    private function drawCurrentIcon( $image,$conditionText,$cloudy_pct,$x,$y )
     {
         //$conditionText = 'sun, rain, lightning, cloud,';
         //var_dump( $conditionText );
@@ -294,13 +296,13 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( str_contains( $conditionText, 'cloud' ) ) {
+        if( str_contains( $conditionText, 'cloud' ) and $cloudy_pct <= 50 ) {
 
             imagefilledellipse( $image,$x + 10,$y - 10,64-6,20,$this->grey );
             imagefilledellipse( $image,$x + 10,$y - 10,64-6,24,$this->grey );
             imagefilledellipse( $image,$x + 10,$y - 10,64,26,$this->grey );
 
-        } elseif( str_contains($conditionText, 'overcast' ) ) {
+        } elseif( str_contains($conditionText, 'overcast' ) or $cloudy_pct >= 50 ) {
 
             imagefilledellipse( $image,$x + 10,$y - 10,64-6,20,$this->grey );
             imagefilledellipse( $image,$x + 10,$y - 10,64-6,24,$this->grey );
