@@ -17,23 +17,42 @@ Note:
 
 - Register App for use at weatherapi.com
 - Generate your API key
-- Paste your API key into the weather.php script $OPTIONS, near the top
+- Paste your API key and other configs into a .env file in the root of this project:
+```
+# Weather Options
+WEATHERAPI_KEY="xxxxxxxxxxxx"
+IMAGE_DIRECTORY="images"
+DAYS_TO_FETCH=3
+FONT_FAMILY="fonts/Brush Script.ttf"
+FONT_COLOR="#c64fff"
+FONT_SIZE=35
+# c or f
+HEAT_UNIT="f"
+# kpm or mph
+SPEED_UNIT="mph"
+PRECISION=1
+# es or en
+LANG="en"
+LATITUDE="xxxxxxxxx"
+LONGITUDE="yyyyyyyy"
+```
 
 - Open GeekTool
 
 #### Enable Weather Generation Method 1
 - Drag new 'Shell' Geeklet to your desktop
 - Paste the following line into the Shell Command:
-```/path/to/php /path/to/jWeather/weather.php```
+```/path/to/php /path/to/jWeather/artisan weather:generate-image```
 
-Note:
+Notes:
 - The following command can show you the path to your php install:
 ```which php```
+- You can disable the output by checking override text and setting the value to a space in GT
 
 - Set the command to run every 3,600 seconds
 - Set Timeout to something such as 20 seconds
 - Check Display status feedback image
-- In your terminal, run ```/path/to/php /path/to/jWeather/weather.php``` to generate the weather display, if necessary or to test
+- In your terminal, run ```/path/to/php /path/to/jWeather/artisan weather:generate-image``` to generate the weather display, if necessary or to test
 
 #### Enable Weather Generation Method 2 ( optional )
 Note:
@@ -42,7 +61,7 @@ Note:
 - Create a cron entry in your system for the weather script to run:
 - In your terminal, run ```crontab -e```
 - Paste the following into your crontab:
-- ```0 * * * * /path/to/php /path/to/jWeather/weather.php```
+- ```0 * * * * /path/to/php /path/to/jWeather/artisan weather:generate-image```
 - Ensure your terminal has full disk access if issues are encountered
 
 Note:
@@ -50,7 +69,7 @@ Note:
 
 #### Enable Weather Display
 - Drag new 'Image' Geeklet to your desktop
-- Set local path to: ```/path/to/jWeather/out.png```
+- Set local path to: ```/path/to/jWeather/public/images/out.png```
 
 - Resize the 'Image' window to desired size by dragging the bottom right corner
 - Set to run every every 2 seconds or no more than 3600 seconds
@@ -60,8 +79,8 @@ Note:
 Any Mac system that has php installed
 
 ## FAQ
-- You can change size of font in weather.php, along with other settings
-- You may need to run ```/path/to/php /path/to/jWeather/weather.php``` to see those changes immediately
+- You can change size of font in your .evn, along with other settings
+- You may need to run ```/path/to/php /path/to/jWeather/artisan weather:generate-image``` to see those changes immediately
 
 ## Issues
 https://github.com/jadissa/jWeather/issues
