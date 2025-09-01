@@ -35,6 +35,7 @@ PRECISION=1
 LANG="en"
 LATITUDE="xxxxxxxxx"
 LONGITUDE="yyyyyyyy"
+TIME_ZONE="America/Los_Angeles"
 ```
 
 - Open GeekTool
