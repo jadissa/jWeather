@@ -380,7 +380,7 @@ class GenerateWeatherImage extends Command
     {
 
         //$conditionText = 'sun, rain, lightning, cloud';
-        var_dump( $iterator, $conditionText,$cloudy_pct );
+        //var_dump( $iterator, $conditionText,$cloudy_pct );
         // Sun
         imagefilledellipse( $image,$x + 25,$y + 15,32,32,$this->yellow );
 
@@ -395,7 +395,7 @@ class GenerateWeatherImage extends Command
 
         if( $cloudy_pct >= 50 ) {
 
-            imagefilledellipse( $image,$x + 20,$y + 25,25,15,$this->dark_grey );
+            imagefilledellipse( $image,$x + 30,$y + 25,25,15,$this->dark_grey );
             imagefilledellipse( $image,$x + 40,$y + 18,30,24,$this->dark_grey );
 
         }
