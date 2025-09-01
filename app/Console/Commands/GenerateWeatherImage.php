@@ -182,7 +182,7 @@ class GenerateWeatherImage extends Command
 
             // Weather icon (dynamic 64x64 transparent image)
             $conditionText = strtolower($day['day']['condition']['text']);
-            $this->drawForecastIcon($image, $x, $y, $conditionText,$index );
+            $this->drawForecastIcon( $image,$x,$y,$conditionText,$current['cloud'],$index );
 
             $y += 80;
 
@@ -379,7 +379,7 @@ class GenerateWeatherImage extends Command
 
     }
 
-    private function drawForecastIcon( $image,$x,$y,$conditionText,$iterator )
+    private function drawForecastIcon( $image,$x,$y,$conditionText,$cloudy_pct,$iterator )
     {
 
         //$conditionText = 'sun, rain, lightning, cloud';
@@ -388,13 +388,13 @@ class GenerateWeatherImage extends Command
         imagefilledellipse( $image,$x + 25,$y + 15,32,32,$this->yellow );
 
         // Clouds
-        if( str_contains( $conditionText, 'cloud' ) ) {
+        if( str_contains( $conditionText, 'cloud' ) and $cloudy_pct <= 50 ) {
 
             imagefilledellipse( $image,$x + 40,$y + 10,30,20,$this->grey );
             imagefilledellipse( $image,$x + 40,$y + 10,30,24,$this->grey );
             imagefilledellipse( $image,$x + 40,$y + 10,36,26,$this->grey );
 
-        } elseif( str_contains($conditionText, 'overcast' ) ) {
+        } elseif( str_contains($conditionText, 'overcast' ) or $cloudy_pct >= 50 ) {
 
             imagefilledellipse( $image,$x + 40,$y + 10,30,20,$this->grey );
             imagefilledellipse( $image,$x + 40,$y + 10,30,24,$this->grey );
