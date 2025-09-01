@@ -250,7 +250,7 @@ class GenerateWeatherImage extends Command
     private function drawCurrentIcon( $image,$conditionText,$x,$y )
     {
         //$conditionText = 'sun, rain, lightning, cloud,';
-
+        //var_dump( $conditionText );
         $day_time = true;
 
         $currentHour = date('H'); // Get current hour in 24-hour format (00-23)
@@ -294,7 +294,13 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
+        if( str_contains( $conditionText, 'cloud' ) ) {
+
+            imagefilledellipse( $image,$x + 10,$y - 10,64-6,20,$this->grey );
+            imagefilledellipse( $image,$x + 10,$y - 10,64-6,24,$this->grey );
+            imagefilledellipse( $image,$x + 10,$y - 10,64,26,$this->grey );
+
+        } elseif( str_contains($conditionText, 'overcast' ) ) {
 
             imagefilledellipse( $image,$x + 10,$y - 10,64-6,20,$this->grey );
             imagefilledellipse( $image,$x + 10,$y - 10,64-6,24,$this->grey );
@@ -380,7 +386,13 @@ class GenerateWeatherImage extends Command
         imagefilledellipse( $image,$x + 25,$y + 15,32,32,$this->yellow );
 
         // Clouds
-        if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
+        if( str_contains( $conditionText, 'cloud' ) ) {
+
+            imagefilledellipse( $image,$x + 40,$y + 10,30,20,$this->grey );
+            imagefilledellipse( $image,$x + 40,$y + 10,30,24,$this->grey );
+            imagefilledellipse( $image,$x + 40,$y + 10,36,26,$this->grey );
+
+        } elseif( str_contains($conditionText, 'overcast' ) ) {
 
             imagefilledellipse( $image,$x + 40,$y + 10,30,20,$this->grey );
             imagefilledellipse( $image,$x + 40,$y + 10,30,24,$this->grey );
