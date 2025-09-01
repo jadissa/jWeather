@@ -376,20 +376,8 @@ class GenerateWeatherImage extends Command
 
         //$conditionText = 'sun, rain, lightning, cloud';
         //var_dump( $iterator, $conditionText );
-        // Sun / Moon
-        if( str_contains( $conditionText, 'clear' ) or str_contains( $conditionText, 'sun' ) or str_contains( $conditionText, 'partly cloudy' ) ) {
-
-            imagefilledellipse( $image,$x + 25,$y + 15,32,32,$this->yellow );
-
-            /*
-            $sunray_count = 5;
-            for( $i = 0;$i < $sunray_count;$i++ ) {
-                imageline( $image, $x,$y,$x,$y + 10,$this->yellow );
-
-            }
-            */
-
-        }
+        // Sun
+        imagefilledellipse( $image,$x + 25,$y + 15,32,32,$this->yellow );
 
         // Clouds
         if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
