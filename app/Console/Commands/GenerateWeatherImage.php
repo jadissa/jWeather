@@ -110,6 +110,9 @@ class GenerateWeatherImage extends Command
         $this->heat_unit    = config('services.weatherapi.heat_unit');
         $this->speed_unit   = config('services.weatherapi.speed_unit');
 
+        $this->current      = $data['current'];
+        $this->day_time     = $this->current['is_day'];
+
         // Make transparent
         imagesavealpha($image, true);
         $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
@@ -124,15 +127,14 @@ class GenerateWeatherImage extends Command
         imageline($image, 0, 60, $width, 60, $this->font_color);
 
         // --- Left side: Current conditions ---
-        $current = $data['current'];
         $currentY = 150;
         $leftMargin = 20;
-
+        
         // Draw current image
-        $this->drawCurrentIcon( $image,$current['condition']['text'],$current['cloud'],$leftMargin + 32,$currentY-32 );
+        $this->drawCurrentIcon( $image,$leftMargin + 32,$currentY-32 );
 
         // Current temperature
-        $tempText = $current["temp_{$this->heat_unit}"]. '°';
+        $tempText = $this->current["temp_{$this->heat_unit}"]. '°';
         imagettftext($image, $this->font_size+8, 0, $leftMargin + 80, $currentY-22, $this->font_color, $this->font_family, $tempText);
 
         // Alert data
@@ -144,16 +146,16 @@ class GenerateWeatherImage extends Command
 
         // Clouds
         $currentY += 40;
-        $cloud_text = "Cloud Coverage: " . $current['cloud'] . "%";
+        $cloud_text = "Cloud Coverage: " . $this->current['cloud'] . "%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $cloud_text);
 
         // Wind
         $currentY += 40;
-        $windText = "Wind: " . $current["wind_{$this->speed_unit}"] . " $this->speed_unit " . $current['wind_dir'];
+        $windText = "Wind: " . $this->current["wind_{$this->speed_unit}"] . " $this->speed_unit " . $this->current['wind_dir'];
 
-        if( $current["gust_{$this->speed_unit}"] > 0 ) {
+        if( $this->current["gust_{$this->speed_unit}"] > 0 ) {
 
-            $windText .= ", Gusts: " . $current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
+            $windText .= ", Gusts: " . $this->current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
 
         }
 
@@ -161,7 +163,7 @@ class GenerateWeatherImage extends Command
 
         // Humidity
         $currentY += 40;
-        $humidityText = "Humidity: " . $current['humidity'] . "%";
+        $humidityText = "Humidity: " . $this->current['humidity'] . "%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $humidityText);
 
         // --- Right side: 3-day forecast ---
@@ -182,7 +184,7 @@ class GenerateWeatherImage extends Command
 
             // Weather icon (dynamic 64x64 transparent image)
             $conditionText = $day['day']['condition']['text'];
-            $this->drawForecastIcon( $image,$x,$y,$conditionText,$current['cloud'],$index );
+            $this->drawForecastIcon( $image,$x,$y,$index );
 
             $y += 80;
 
@@ -249,26 +251,15 @@ class GenerateWeatherImage extends Command
         imagedestroy($image);
     }
 
-    private function drawCurrentIcon( $image,$conditionText,$cloudy_pct,$x,$y )
+    private function drawCurrentIcon( $image,$x,$y )
     {
-        $conditionText = strtolower( $conditionText );
+        $conditionText  = strtolower( $this->current['condition']['text'] );
+        $cloudy_pct     = $this->current['cloud'];
+
         //$conditionText = 'sun, lightning, fog';
         $scale_multiplyer   = 2;
 
-        $day_time           = true;
-
-        $currentHour        = date( 'H' );  // 24 hour format
-
-        $afterDarkHour      = 19;           // 7 PM
-        $beforeMorningHour  = 6;            // 6 AM
-
-        if ($currentHour >= $afterDarkHour or $currentHour < $beforeMorningHour) {
-
-            $day_time = false;
-
-        }
-
-        if( $day_time ) {
+        if( $this->day_time ) {
 
             $this->drawSun( $image,$scale_multiplyer,$x,$y );
 
@@ -337,10 +328,11 @@ class GenerateWeatherImage extends Command
 
     }
 
-    private function drawForecastIcon( $image,$x,$y,$conditionText,$cloudy_pct )
+    private function drawForecastIcon( $image,$x,$y )
     {
-        $scale_multiplyer = 1;
-        $conditionText = strtolower( $conditionText );
+        $scale_multiplyer   = 1;
+        $conditionText      = strtolower( $this->current['condition']['text'] );
+        $cloudy_pct         = $this->current['cloud'];
         //$conditionText = 'sun, lightning, fog';
         //var_dump( $conditionText,$cloudy_pct );
 
