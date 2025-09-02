@@ -31,9 +31,9 @@ class GenerateWeatherImage extends Command
 
         try {
             $weatherData = $this->fetchWeatherData();
-            $this->createWeatherImage($weatherData);
-            $this->info('Image generated successfully at public/images/out.png');
-        } catch (Exception $e) {
+            $this->createWeatherImage( $weatherData );
+            $this->info( 'Image generated successfully at public/images/out.png' );
+        } catch( Exception $e ) {
             $this->error('An error occurred: ' . $e->getMessage());
         }
 
@@ -87,28 +87,28 @@ class GenerateWeatherImage extends Command
     {
 
         // Define image
-        $width = 1092;
-        $height = 448;
-        $image = imagecreatetruecolor($width, $height);
+        $width              = 1092;
+        $height             = 448;
+        $image              = imagecreatetruecolor($width, $height);
 
         // Define weather Colors
-        $this->grey       = imagecolorallocate( $image,150,150,150 );
-        $this->dark_grey  = imagecolorallocate( $image,100,100,100 );
-        $this->blue       = imagecolorallocate( $image,0,128,255 );
-        $this->white      = imagecolorallocate( $image,255,255,255 );
-        $this->yellow     = imagecolorallocate( $image,255,223,0 );
-        $this->pale       = imagecolorallocate($image, 230, 230, 230);
+        $this->grey         = imagecolorallocate( $image,147,148,150 );
+        $this->dark_grey    = imagecolorallocate( $image,100,100,100 );
+        $this->blue         = imagecolorallocate( $image,0,128,255 );
+        $this->white        = imagecolorallocate( $image,255,255,255 );
+        $this->yellow       = imagecolorallocate( $image,255,223,0 );
+        $this->pale         = imagecolorallocate($image, 230, 230, 230);
 
         // Define fonts
-        $font_color = $this->hexToRgb( config('services.weatherapi.font_color') ) ?? [255, 255, 255];
-        $font_color = imagecolorallocate($image, $font_color['r'], $font_color['g'], $font_color['b']);
-        $font_family = public_path( config('services.weatherapi.font_family') );
-        $font_size = config('services.weatherapi.font_size');
+        $this->font_color   = $this->hexToRgb( config('services.weatherapi.font_color') ) ?? [255, 255, 255];
+        $this->font_color   = imagecolorallocate($image, $this->font_color['r'], $this->font_color['g'], $this->font_color['b']);
+        $this->font_family  = public_path( config('services.weatherapi.font_family') );
+        $this->font_size    = config('services.weatherapi.font_size');
 
         // Define data constraints
-        $precision = config('services.weatherapi.precision');
-        $heat_unit = config('services.weatherapi.heat_unit');
-        $speed_unit = config('services.weatherapi.speed_unit');
+        $this->precision    = config('services.weatherapi.precision');
+        $this->heat_unit    = config('services.weatherapi.heat_unit');
+        $this->speed_unit   = config('services.weatherapi.speed_unit');
 
         // Make transparent
         imagesavealpha($image, true);
@@ -118,10 +118,10 @@ class GenerateWeatherImage extends Command
         // Draw heading
         $locationName = $data['location']['name'];
         $headingText = "Weather for $locationName";
-        imagettftext($image, $font_size+5, 0, 20, 40, $font_color, $font_family, $headingText);
+        imagettftext($image, $this->font_size+5, 0, 20, 40, $this->font_color, $this->font_family, $headingText);
 
         // Draw horizontal line
-        imageline($image, 0, 60, $width, 60, $font_color);
+        imageline($image, 0, 60, $width, 60, $this->font_color);
 
         // --- Left side: Current conditions ---
         $current = $data['current'];
@@ -132,37 +132,37 @@ class GenerateWeatherImage extends Command
         $this->drawCurrentIcon( $image,$current['condition']['text'],$current['cloud'],$leftMargin + 32,$currentY-32 );
 
         // Current temperature
-        $tempText = $current["temp_{$heat_unit}"]. '°';
-        imagettftext($image, $font_size+8, 0, $leftMargin + 80, $currentY-22, $font_color, $font_family, $tempText);
+        $tempText = $current["temp_{$this->heat_unit}"]. '°';
+        imagettftext($image, $this->font_size+8, 0, $leftMargin + 80, $currentY-22, $this->font_color, $this->font_family, $tempText);
 
         // Alert data
         $currentY += 40;
         if (isset($data['alerts']['alert'][0])) {
             $alertText = "Alert: " . $data['alerts']['alert'][0]['event'];
-            imagettftext($image, $font_size, 0, $leftMargin, $currentY, $font_color, $font_family, $alertText);
+            imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $alertText);
         }
 
         // Clouds
         $currentY += 40;
         $cloud_text = "Cloud Coverage: " . $current['cloud'] . "%";
-        imagettftext($image, $font_size-5, 0, $leftMargin, $currentY, $font_color, $font_family, $cloud_text);
+        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $cloud_text);
 
         // Wind
         $currentY += 40;
-        $windText = "Wind: " . $current["wind_{$speed_unit}"] . " $speed_unit " . $current['wind_dir'];
+        $windText = "Wind: " . $current["wind_{$this->speed_unit}"] . " $this->speed_unit " . $current['wind_dir'];
 
-        if( $current["gust_{$speed_unit}"] > 0 ) {
+        if( $current["gust_{$this->speed_unit}"] > 0 ) {
 
-            $windText .= ", Gusts: " . $current["gust_{$speed_unit}"] . " {$speed_unit}";
+            $windText .= ", Gusts: " . $current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
 
         }
 
-        imagettftext($image, $font_size-5, 0, $leftMargin, $currentY, $font_color, $font_family, $windText);
+        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $windText);
 
         // Humidity
         $currentY += 40;
         $humidityText = "Humidity: " . $current['humidity'] . "%";
-        imagettftext($image, $font_size-5, 0, $leftMargin, $currentY, $font_color, $font_family, $humidityText);
+        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $humidityText);
 
         // --- Right side: 3-day forecast ---
         $forecastDays = $data['forecast']['forecastday'];
@@ -176,27 +176,27 @@ class GenerateWeatherImage extends Command
 
             // Day name (e.g., Mon, Tues)
             $dayName = date('D', strtotime($day['date']));
-            imagettftext($image, $font_size, 0, $x, $y, $font_color, $font_family, $dayName);
+            imagettftext($image, $this->font_size, 0, $x, $y, $this->font_color, $this->font_family, $dayName);
 
             $y += 20;
 
             // Weather icon (dynamic 64x64 transparent image)
-            $conditionText = strtolower($day['day']['condition']['text']);
+            $conditionText = $day['day']['condition']['text'];
             $this->drawForecastIcon( $image,$x,$y,$conditionText,$current['cloud'],$index );
 
             $y += 80;
 
             // High temperature
-            $highTempText = $day['day']["maxtemp_{$heat_unit}"] . "°";
-            imagettftext($image, $font_size-5, 0, $x, $y, $font_color, $font_family, $highTempText);
+            $highTempText = $day['day']["maxtemp_{$this->heat_unit}"] . "°";
+            imagettftext($image, $this->font_size-5, 0, $x, $y, $this->font_color, $this->font_family, $highTempText);
 
             $y += 30;
 
             // Vertical temperature line (20x100 pixel, filled dynamically)
             $tempLineHeight = 100;
             $tempLineWidth = 20;
-            $lowTemp = $day['day']["mintemp_{$heat_unit}"];
-            $highTemp = $day['day']["maxtemp_{$heat_unit}"];
+            $lowTemp = $day['day']["mintemp_{$this->heat_unit}"];
+            $highTemp = $day['day']["maxtemp_{$this->heat_unit}"];
             $tempRange = 40; // Assuming a 40 degree range for the line
             $fillHeight = min($tempLineHeight, max(0, ($highTemp / $tempRange) * $tempLineHeight));
 
@@ -209,7 +209,7 @@ class GenerateWeatherImage extends Command
                 20, // Height of the ellipse
                 180, // Start angle (top half of a circle)
                 0, // End angle
-                $font_color,
+                $this->font_color,
                 IMG_ARC_PIE
             );
 
@@ -220,7 +220,7 @@ class GenerateWeatherImage extends Command
                 $y,
                 $x+15 + ($tempLineWidth / 2) + 10,
                 $y + $fillHeight,
-                $font_color
+                $this->font_color
             );
 
             // Bottom
@@ -232,15 +232,15 @@ class GenerateWeatherImage extends Command
                 20, // Height of the ellipse
                 0, // Start angle (bottom half of a circle)
                 180, // End angle
-                $font_color,
+                $this->font_color,
                 IMG_ARC_PIE
             );
 
             $y += $tempLineHeight + 55;
 
             // Low temperature
-            $lowTempText = $day['day']["mintemp_{$heat_unit}"] . "°";
-            imagettftext($image, $font_size-5, 0, $x, $y, $font_color, $font_family, $lowTempText);
+            $lowTempText = $day['day']["mintemp_{$this->heat_unit}"] . "°";
+            imagettftext($image, $this->font_size-5, 0, $x, $y, $this->font_color, $this->font_family, $lowTempText);
         }
 
         // Save the image
@@ -251,15 +251,16 @@ class GenerateWeatherImage extends Command
 
     private function drawCurrentIcon( $image,$conditionText,$cloudy_pct,$x,$y )
     {
-        //$conditionText = 'sun, rain, lightning, cloud,';
-        //var_dump( $conditionText );
-        $day_time = true;
+        $conditionText = strtolower( $conditionText );
+        //$conditionText = 'sun, lightning, fog';
+        $scale_multiplyer   = 2;
 
-        $currentHour = date('H'); // Get current hour in 24-hour format (00-23)
+        $day_time           = true;
 
-        // Define "nighttime" hours (example: from 7 PM to before 6 AM)
-        $afterDarkHour = 19; // 7 PM
-        $beforeMorningHour = 6; // 6 AM
+        $currentHour        = date( 'H' );  // 24 hour format
+
+        $afterDarkHour      = 19;           // 7 PM
+        $beforeMorningHour  = 6;            // 6 AM
 
         if ($currentHour >= $afterDarkHour or $currentHour < $beforeMorningHour) {
 
@@ -269,199 +270,233 @@ class GenerateWeatherImage extends Command
 
         if( $day_time ) {
 
-            imagefilledellipse( $image,$x,$y,64,64,$this->yellow );
+            $this->drawSun( $image,$scale_multiplyer,$x,$y );
 
         } else {
 
-            // Turn off alpha blending to ensure the alpha channel is preserved when drawing.
-            imagealphablending($image, false);
-
-            // Allocate a transparent color with a 127 alpha value (fully transparent).
-            $transparent_color = imagecolorallocatealpha($image, 0, 0, 0, 127);
-
-            // Fill the entire image with the transparent color.
-            imagefill($image, 0, 0, $transparent_color);
-
-            // Enable the saving of the full alpha channel information for the PNG.
-            imagesavealpha($image, true);
-
-            // Calculate the center and radius for the circle.
-            $center_x = 64 / 2;
-            $center_y = 64 / 2;
-            $radius = 32;
-
-            // Draw a filled ellipse to represent the moon. Since the height and width are the same, it will be a perfect circle.
-            imagefilledellipse($image, $x,$y, $radius * 2, $radius * 2, $this->pale);
+            $this->drawMoon( $image,$scale_multiplyer,$x,$y );
 
         }
 
         // Clouds
         if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
 
-            imagefilledellipse( $image,$x + 18,$y - 10,64-6,40,$this->grey );
-            imagefilledellipse( $image,$x + 15,$y - 10,64,26,$this->grey );
+            $this->drawLightClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
+        }
+
+        if( str_contains( $conditionText, 'sun' ) and $cloudy_pct >= 50 ) {
+
+            $this->drawLightClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
+            $this->drawDarkClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
+
+        } elseif( $cloudy_pct >= 50 ) {
+
+            $this->drawLightClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
+            $this->drawDarkClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
 
         }
 
-        if( $cloudy_pct >= 50 ) {
-
-            imagefilledellipse( $image,$x-10,$y+9,45,22,$this->dark_grey );
-            imagefilledellipse( $image,$x + 20,$y,64-9,42,$this->dark_grey );
-
-        }
+        // Reset coords for weather
+        $x = $x - 30;
+        $y = $y - 10;
 
         // Rain
-        $x = $x - 30;
         if( str_contains( $conditionText,'rain' ) ) {
 
-            $raindrop_count = 10;
-            for( $i = 0;$i < $raindrop_count;$i++ ) {
-
-                $new_x = mt_rand( 5,50 );
-                $new_y = mt_rand( 30,40 );
-                imageline( $image,$x + $new_x + 15,$y + $new_y,$x + $new_x,$y + 10,$this->blue );
-
-            }
+            $this->drawRain( $image,$x,$y );
 
         }
 
         // Snow
         if( str_contains( $conditionText,'snow' ) or str_contains( $conditionText,'blizzard' ) ) {
 
-            for( $i =0;$i < 5;$i++ ) {
-
-                imagefilledellipse( $image, $x + rand(0, 32),$y + rand(0, 32),5,5,$this->white );
-
-            }
+            $this->drawSnow( $image,$x,$y );
 
         }
 
         // Sleet
         if( str_contains( $conditionText,'sleet' ) ) {
 
-            for( $i = 0;$i < 3;$i++ ) {
-
-                imageline( $image, $x + rand(0, 32),$y + rand(0, 32),$x + rand(0, 32),$y + rand(0, 32),$this->blue );
-
-                imagefilledellipse($image, $x + rand(0, 32), $y + rand(0, 32), 5, 5, $this->white);
-
-            }
+            $this->drawSleet( $image,$x,$y );
 
         }
 
         // Fog
         if( str_contains( $conditionText,'fog' ) or str_contains( $conditionText,'mist' ) ) {
 
-            for( $i = 0;$i < 5;$i++ ) {
-
-                imageline($image, $x, $y + $i * 10, $x + 64, $y + $i * 10, $this->grey);
-
-            }
+            $this->drawFog( $image,$x,$y );
 
         }
 
         // Thunder
         if ( str_contains($conditionText, 'lightning') ) {
 
-            imageline($image, $x + 32, $y + 15, $x + 22, $y + 30, $this->blue);
-            imageline($image, $x + 33, $y + 15, $x + 23, $y + 30, $this->blue);
-
-            imageline($image, $x + 22, $y + 30, $x + 42, $y + 30, $this->blue);
-            imageline($image, $x + 23, $y + 30, $x + 43, $y + 30, $this->blue);
-
-            imageline($image, $x + 42, $y + 30, $x + 32, $y + 45, $this->yellow);
-            imageline($image, $x + 43, $y + 30, $x + 33, $y + 45, $this->yellow);
+            $this->drawLightning( $image,$x,$y );
 
         }
 
     }
 
-    private function drawForecastIcon( $image,$x,$y,$conditionText,$cloudy_pct,$iterator )
+    private function drawForecastIcon( $image,$x,$y,$conditionText,$cloudy_pct )
     {
+        $scale_multiplyer = 1;
+        $conditionText = strtolower( $conditionText );
+        //$conditionText = 'sun, lightning, fog';
+        //var_dump( $conditionText,$cloudy_pct );
 
-        //$conditionText = 'sun, rain, lightning, cloud';
-        //var_dump( $iterator, $conditionText,$cloudy_pct );
         // Sun
         imagefilledellipse( $image,$x + 25,$y + 15,32,32,$this->yellow );
 
         // Clouds
         if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
 
-            imagefilledellipse( $image,$x + 40,$y + 10,30,20,$this->grey );
-            imagefilledellipse( $image,$x + 40,$y + 10,30,24,$this->grey );
-            imagefilledellipse( $image,$x + 40,$y + 10,36,26,$this->grey );
+            $this->drawLightClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
+
+        }
+        if( str_contains( $conditionText, 'sun' ) and $cloudy_pct >= 50 ) {
+
+            $this->drawLightClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
+            $this->drawDarkClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
+
+        } elseif( $cloudy_pct >= 50 ) {
+
+            $this->drawLightClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
+            $this->drawDarkClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
 
         }
 
-        if( $cloudy_pct >= 50 ) {
-
-            imagefilledellipse( $image,$x + 30,$y + 25,25,15,$this->dark_grey );
-            imagefilledellipse( $image,$x + 40,$y + 18,30,24,$this->dark_grey );
-
-        }
-
-        // Rain
+        // Rain        
         if( str_contains( $conditionText,'rain' ) ) {
 
-            $raindrop_count = 10;
-            for( $i = 0;$i < $raindrop_count;$i++ ) {
-
-                $new_x = mt_rand( 5,50 );
-                $new_y = mt_rand( 30,40 );
-                imageline( $image,$x + $new_x + 15,$y + $new_y,$x + $new_x,$y + 10,$this->blue );
-
-            }
+            $this->drawRain( $image,$x,$y );
 
         }
 
         // Snow
         if( str_contains( $conditionText,'snow' ) or str_contains( $conditionText,'blizzard' ) ) {
 
-            for( $i =0;$i < 5;$i++ ) {
-
-                imagefilledellipse( $image, $x + rand(0, 32),$y + rand(0, 32),5,5,$this->white );
-
-            }
+            $this->drawSnow( $image,$x,$y );
 
         }
 
         // Sleet
         if( str_contains( $conditionText,'sleet' ) ) {
 
-            for( $i = 0;$i < 3;$i++ ) {
-
-                imageline( $image, $x + rand(0, 32),$y + rand(0, 32),$x + rand(0, 32),$y + rand(0, 32),$this->blue );
-
-                imagefilledellipse($image, $x + rand(0, 32), $y + rand(0, 32), 5, 5, $this->white);
-
-            }
+            $this->drawSleet( $image,$x,$y );
 
         }
 
         // Fog
         if( str_contains( $conditionText,'fog' ) or str_contains( $conditionText,'mist' ) ) {
 
-            for( $i = 0;$i < 5;$i++ ) {
-
-                imageline($image, $x, $y + $i * 10, $x + 64, $y + $i * 10, $this->grey);
-
-            }
+            $this->drawFog( $image,$x,$y );
 
         }
 
         // Thunder
         if ( str_contains($conditionText, 'lightning') ) {
 
-            imageline($image, $x + 32, $y + 15, $x + 22, $y + 30, $this->white);
-            imageline($image, $x + 33, $y + 15, $x + 23, $y + 30, $this->white);
-
-            imageline($image, $x + 22, $y + 30, $x + 42, $y + 30, $this->white);
-            imageline($image, $x + 23, $y + 30, $x + 43, $y + 30, $this->white);
-
-            imageline($image, $x + 42, $y + 30, $x + 32, $y + 45, $this->yellow);
-            imageline($image, $x + 43, $y + 30, $x + 33, $y + 45, $this->yellow);
+            $this->drawLightning( $image,$x,$y );
 
         }
+
+    }
+
+    private function drawSun( $image,$scale_multiplyer,$x,$y ) {
+
+        imagefilledellipse( $image,$x,$y,( 32 ) * $scale_multiplyer,( 32 ) * $scale_multiplyer,$this->yellow );
+
+    }
+
+    private function drawMoon( $image,$scale_multiplyer,$x,$y ) {
+
+        // Turn off alpha blending to ensure the alpha channel is preserved when drawing.
+        imagealphablending($image, false);
+
+        // Allocate a transparent color with a 127 alpha value (fully transparent).
+        $transparent_color = imagecolorallocatealpha($image, 0, 0, 0, 127);
+
+        // Fill the entire image with the transparent color.
+        imagefill($image, 0, 0, $transparent_color);
+
+        // Enable the saving of the full alpha channel information for the PNG.
+        imagesavealpha($image, true);
+
+        // Calculate the center and radius for the circle.
+        $center_x = 64 / 2;
+        $center_y = 64 / 2;
+        $radius = 32;
+
+        // Draw a filled ellipse to represent the moon. Since the height and width are the same, it will be a perfect circle.
+        imagefilledellipse( $image,$x,$y,( $radius ) * $scale_multiplyer,( $radius ) * $scale_multiplyer,$this->pale );
+
+    }
+
+    private function drawRain( $image,$x,$y ) {
+
+        $y = $y + 15;
+        $raindrop_count = 30;
+        for( $i = 0;$i < $raindrop_count;$i++ ) {
+
+            $new_x = mt_rand( 5,50 );
+            $new_y = mt_rand( 30,40 );
+            imageline( $image,$x + $new_x + 15,$y + $new_y,( $x + $new_x ),( $y + 10 ),$this->blue );
+
+        }
+
+    }
+
+    private function drawSnow( $image,$x,$y ) {
+
+        for( $i =0;$i < 20;$i++ ) {
+
+            imagefilledellipse( $image, $x + rand(5, 64),$y + rand(30, 55),5,5,$this->white );
+
+        }
+
+    }
+
+    private function drawSleet( $image,$x,$y ) {
+
+        $this->drawRain( $image,$x,$y );
+        $this->drawSnow( $image,$x,$y );
+
+    }
+
+    private function drawFog( $image,$x,$y ) {
+
+        for( $i = 0;$i < 5;$i++ ) {
+
+            imageline($image, $x, $y + $i * 10,( $x + 64 ),( $y + $i * 10 ), $this->grey);
+
+        }
+
+    }
+
+    private function drawLightning( $image,$x,$y ) {
+
+        imageline( $image, $x + 32, $y + 15,( $x + 22 ),( $y + 30 ), $this->white );
+        imageline( $image, $x + 33, $y + 15,( $x + 23 ),( $y + 30 ), $this->white );
+
+        imageline( $image, $x + 22, $y + 30,( $x + 42 ),( $y + 30 ), $this->white );
+        imageline( $image, $x + 23, $y + 30,( $x + 43 ),( $y + 30 ), $this->white );
+
+        imageline( $image, $x + 42, $y + 30,( $x + 32 ),( $y + 45 ), $this->yellow );
+        imageline( $image, $x + 43, $y + 30,( $x + 33 ),( $y + 45 ), $this->yellow );
+
+    }
+
+    private function drawLightClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct ) {
+
+        imagefilledellipse( $image,$x,$y + 10,30 * $scale_multiplyer,20 * $scale_multiplyer,$this->grey );
+        imagefilledellipse( $image,$x,$y + 10,30 * $scale_multiplyer,24 * $scale_multiplyer,$this->grey );
+        imagefilledellipse( $image,$x,$y + 10,36 * $scale_multiplyer,26 * $scale_multiplyer,$this->grey );
+
+    }
+
+    private function drawDarkClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct ) {
+
+        imagefilledellipse( $image,$x,$y + 18,30 * $scale_multiplyer,24 * $scale_multiplyer,$this->dark_grey );
 
     }
 
