@@ -110,8 +110,14 @@ class GenerateWeatherImage extends Command
         $this->heat_unit    = config('services.weatherapi.heat_unit');
         $this->speed_unit   = config('services.weatherapi.speed_unit');
 
+        // Each day's data
+        $this->forecast     = $data['forecast']['forecastday'];
+
+        // Today's data
         $this->current      = $data['current'];
         $this->day_time     = $this->current['is_day'];
+        $this->rain_chance  = $this->forecast[0]['day']['daily_chance_of_rain'];
+        $this->snow_chance  = $this->forecast[0]['day']['daily_chance_of_snow'];
 
         // Make transparent
         imagesavealpha($image, true);
@@ -134,32 +140,35 @@ class GenerateWeatherImage extends Command
         $this->drawCurrentIcon( $image,$leftMargin + 32,$currentY-32 );
 
         // Current temperature
-        $tempText = $this->current["temp_{$this->heat_unit}"]. '°';
-        imagettftext($image, $this->font_size+8, 0, $leftMargin + 80, $currentY-22, $this->font_color, $this->font_family, $tempText);
+        $text = $this->current["temp_{$this->heat_unit}"]. '°';
+        imagettftext($image, $this->font_size+8, 0, $leftMargin + 80, $currentY-22, $this->font_color, $this->font_family, $text);
 
         // Alert data
         $currentY += 40;
         if (isset($data['alerts']['alert'][0])) {
-            $alertText = "Alert: " . $data['alerts']['alert'][0]['event'];
-            imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $alertText);
+            $text = "Alert: " . $data['alerts']['alert'][0]['event'];
+            imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
         }
 
-        // Clouds
+        // Chances
         $currentY += 40;
-        $cloud_text = "Cloud Coverage: " . $this->current['cloud'] . "%";
-        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $cloud_text);
+        $text = "Chance of Rain: " . $this->rain_chance . "%, Chance of Snow: " . $this->snow_chance . "%";
+        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
         // Wind
         $currentY += 40;
-        $windText = "Wind: " . $this->current["wind_{$this->speed_unit}"] . " $this->speed_unit " . $this->current['wind_dir'];
-
+        $text = "Wind: " . $this->current["wind_{$this->speed_unit}"] . " $this->speed_unit " . $this->current['wind_dir'];
         if( $this->current["gust_{$this->speed_unit}"] > 0 ) {
 
-            $windText .= ", Gusts: " . $this->current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
+            $text .= ", Gusts: " . $this->current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
 
         }
+        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
-        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $windText);
+        // Clouds
+        $currentY += 40;
+        $text = "Cloud Coverage: " . $this->current['cloud'] . "%";
+        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
         // Humidity
         $currentY += 40;
@@ -167,11 +176,10 @@ class GenerateWeatherImage extends Command
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $humidityText);
 
         // --- Right side: 3-day forecast ---
-        $forecastDays = $data['forecast']['forecastday'];
-        $rightMargin = 550;
-        $columnWidth = 200;
+        $rightMargin = 650;
+        $columnWidth = 150;
 
-        foreach( $forecastDays as $index => $day ) {
+        foreach( $this->forecast as $index => $day ) {
 
             $x = $rightMargin + ($index * $columnWidth) + 50;
             $y = 100;
