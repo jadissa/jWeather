@@ -23,7 +23,7 @@ Note:
 WEATHERAPI_KEY="xxxxxxxxxxxx"
 IMAGE_DIRECTORY="images"
 DAYS_TO_FETCH=3
-FONT_FAMILY="fonts/Brush Script.ttf"
+FONT_FAMILY="fonts/fontx.lel"
 FONT_COLOR="#c64fff"
 FONT_SIZE=35
 # c or f
