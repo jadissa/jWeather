@@ -268,7 +268,7 @@ class GenerateWeatherImage extends Command
         $conditionText  = strtolower( $this->current['condition']['text'] );
         $cloudy_pct     = $this->current['cloud'];
 
-        //$conditionText = 'sun, lightning, fog';
+        //$conditionText = 'sun, lightning, rain';
         $scale_multiplyer   = 2;
 
         if( $this->day_time ) {
@@ -309,10 +309,10 @@ class GenerateWeatherImage extends Command
         // Clouds
         if( $cloudy_pct >= 50 or str_contains( $conditionText, 'overcast' ) ) {
 
-            $this->drawDarkClouds( $image,$x,$y-5 );
+            $this->drawDarkClouds( $image,$x+30,$y-5+10 );
 
         }
-        $this->drawLightClouds( $image,$x,$y-5 );
+        $this->drawLightClouds( $image,$x+30,$y-5+10 );
 
         // Fog
         if( str_contains( $conditionText,'fog' ) or str_contains( $conditionText,'mist' ) ) {
@@ -335,7 +335,7 @@ class GenerateWeatherImage extends Command
         $scale_multiplyer   = 1;
         $conditionText      = strtolower( $this->current['condition']['text'] );
         $cloudy_pct         = $this->current['cloud'];
-        //$conditionText = 'sun, lightning, fog';
+        //$conditionText = 'sun, lightning, rain';
         //var_dump( $conditionText,$cloudy_pct );
 
         // Sun
@@ -426,10 +426,10 @@ class GenerateWeatherImage extends Command
     private function drawRain( $image,$x,$y ) {
 
         $y = $y + 15;
-        $raindrop_count = 30;
+        $raindrop_count = 25;
         for( $i = 0;$i < $raindrop_count;$i++ ) {
 
-            $new_x = mt_rand( 5,50 );
+            $new_x = mt_rand( 10,50 );
             $new_y = mt_rand( 30,40 );
             imageline( $image,$x + $new_x + 15,$y + $new_y,( $x + $new_x ),( $y + 10 ),$this->blue );
 
