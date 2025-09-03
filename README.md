@@ -86,6 +86,7 @@ Any Mac system that has php installed
 
 ## Issues
 https://github.com/jadissa/jWeather/issues
+- If the weather API ever stops working, weather.gov currently provides a free service and this code could be updated to support that API instead: https://api.weather.gov/
 
 ## Screenshots
 <p float="left">
