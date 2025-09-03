@@ -195,7 +195,7 @@ class GenerateWeatherImage extends Command
             $y += 20;
 
             // Weather icon (dynamic 64x64 transparent image)
-            $conditionText = $day['day']['condition']['text'];
+            $this->current['condition'] = $day['day']['condition'];
             $this->drawForecastIcon( $image,$x,$y,$index );
 
             $y += 80;
