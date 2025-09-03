@@ -194,8 +194,10 @@ class GenerateWeatherImage extends Command
 
             $y += 20;
 
-            // Weather icon (dynamic 64x64 transparent image)
             $this->current['condition'] = $day['day']['condition'];
+
+            $this->current['cloud']     = $this->determineCloudiness( $day );
+
             $this->drawForecastIcon( $image,$x,$y,$index );
 
             $y += 80;
@@ -261,6 +263,25 @@ class GenerateWeatherImage extends Command
         $imagePath = public_path('images/out.png');
         imagepng($image, $imagePath);
         imagedestroy($image);
+    }
+
+    private function determineCloudiness( $day ) 
+    {
+
+        $sum_cloudy     = 0;
+
+        foreach( $day['hour'] as $hour => $data ) {
+
+            if( $data['cloud'] ) {
+
+                $sum_cloudy += $data['cloud'];
+
+            }
+
+        }
+
+        return $sum_cloudy / 24;
+
     }
 
     private function drawCurrentIcon( $image,$x,$y )
