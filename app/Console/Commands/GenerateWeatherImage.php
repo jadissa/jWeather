@@ -130,7 +130,7 @@ class GenerateWeatherImage extends Command
 
         // Draw heading
         $locationName = $data['location']['name'];
-        $headingText = "Weather for $locationName";
+        $headingText = "Weather for $locationName (hourly)";
         imagettftext($image, $this->font_size+5, 0, 20, 40, $this->font_color, $this->font_family, $headingText);
 
         // Draw horizontal line
