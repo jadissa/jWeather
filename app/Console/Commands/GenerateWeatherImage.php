@@ -119,6 +119,8 @@ class GenerateWeatherImage extends Command
         $this->rain_chance  = $this->forecast[0]['day']['daily_chance_of_rain'];
         $this->snow_chance  = $this->forecast[0]['day']['daily_chance_of_snow'];
 
+        $conditionText      = strtolower( $this->current['condition']['text'] );
+
         // Make transparent
         imagesavealpha($image, true);
         $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
@@ -167,7 +169,7 @@ class GenerateWeatherImage extends Command
 
         // Clouds
         $currentY += 40;
-        $text = "Cloud Coverage: " . $this->current['cloud'] . "%";
+        $text = "Cloud Coverage: " . $this->current['cloud'] . "%, $conditionText";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
         // Humidity
@@ -269,29 +271,19 @@ class GenerateWeatherImage extends Command
 
         if( $this->day_time ) {
 
-            $this->drawSun( $image,$scale_multiplyer,$x,$y );
+            $this->shape_size = $this->drawSun( $image,$scale_multiplyer,$x,$y );
 
         } else {
 
-            $this->drawMoon( $image,$scale_multiplyer,$x,$y );
+            $this->shape_size = $this->drawMoon( $image,$scale_multiplyer,$x,$y );
 
         }
 
         // Clouds
-        if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
+        $this->drawLightClouds( $image,$x,$y,$cloudy_pct );
+        if( $cloudy_pct >= 50 or str_contains( $conditionText, 'overcast' ) ) {
 
-            $this->drawLightClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
-        }
-
-        if( str_contains( $conditionText, 'sun' ) and $cloudy_pct >= 50 ) {
-
-            $this->drawLightClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
-            $this->drawDarkClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
-
-        } elseif( $cloudy_pct >= 50 ) {
-
-            $this->drawLightClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
-            $this->drawDarkClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct );
+            $this->drawDarkClouds( $image,$x,$y,$cloudy_pct );
 
         }
 
@@ -345,23 +337,13 @@ class GenerateWeatherImage extends Command
         //var_dump( $conditionText,$cloudy_pct );
 
         // Sun
-        imagefilledellipse( $image,$x + 25,$y + 15,32,32,$this->yellow );
+        $this->shape_size = $this->drawSun( $image,$scale_multiplyer,$x + 25,$y + 15 );
 
         // Clouds
-        if( str_contains( $conditionText, 'cloud' ) or str_contains($conditionText, 'overcast' ) ) {
+        $this->drawLightClouds( $image,$x + 25,$y + 10,$cloudy_pct );
+        if( $cloudy_pct >= 50 or str_contains($conditionText, 'overcast' ) ) {
 
-            $this->drawLightClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
-
-        }
-        if( str_contains( $conditionText, 'sun' ) and $cloudy_pct >= 50 ) {
-
-            $this->drawLightClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
-            $this->drawDarkClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
-
-        } elseif( $cloudy_pct >= 50 ) {
-
-            $this->drawLightClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
-            $this->drawDarkClouds( $image,$scale_multiplyer,$x + 25,$y + 10,$conditionText,$cloudy_pct );
+            $this->drawDarkClouds( $image,$x + 25,$y + 12,$cloudy_pct );
 
         }
 
@@ -404,8 +386,11 @@ class GenerateWeatherImage extends Command
 
     private function drawSun( $image,$scale_multiplyer,$x,$y ) {
 
-        imagefilledellipse( $image,$x,$y,( 32 ) * $scale_multiplyer,( 32 ) * $scale_multiplyer,$this->yellow );
+        $shape_size = ( 32 ) * $scale_multiplyer;
 
+        imagefilledellipse( $image,$x,$y,$shape_size,$shape_size,$this->yellow );
+
+        return $shape_size;
     }
 
     private function drawMoon( $image,$scale_multiplyer,$x,$y ) {
@@ -427,8 +412,12 @@ class GenerateWeatherImage extends Command
         $center_y = 64 / 2;
         $radius = 32;
 
+        $shape_size = ( $radius ) * $scale_multiplyer;
+
         // Draw a filled ellipse to represent the moon. Since the height and width are the same, it will be a perfect circle.
-        imagefilledellipse( $image,$x,$y,( $radius ) * $scale_multiplyer,( $radius ) * $scale_multiplyer,$this->pale );
+        imagefilledellipse( $image,$x,$y,$shape_size,$shape_size,$this->pale );
+
+        return $shape_size;
 
     }
 
@@ -486,17 +475,21 @@ class GenerateWeatherImage extends Command
 
     }
 
-    private function drawLightClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct ) {
+    private function drawLightClouds( $image,$x,$y,$cloudy_pct ) {
 
-        imagefilledellipse( $image,$x,$y + 10,30 * $scale_multiplyer,20 * $scale_multiplyer,$this->grey );
-        imagefilledellipse( $image,$x,$y + 10,30 * $scale_multiplyer,24 * $scale_multiplyer,$this->grey );
-        imagefilledellipse( $image,$x,$y + 10,36 * $scale_multiplyer,26 * $scale_multiplyer,$this->grey );
+        $cloud_coverage = $this->shape_size * ( $cloudy_pct / 100 );
+
+        imagefilledellipse( $image,$x,$y + 10,$cloud_coverage + 10,$cloud_coverage,$this->grey );
+        imagefilledellipse( $image,$x,$y + 10,$cloud_coverage,$cloud_coverage,$this->grey );
+        imagefilledellipse( $image,$x,$y + 10,$cloud_coverage + 15,$cloud_coverage,$this->grey );
 
     }
 
-    private function drawDarkClouds( $image,$scale_multiplyer,$x,$y,$conditionText,$cloudy_pct ) {
+    private function drawDarkClouds( $image,$x,$y,$cloudy_pct ) {
 
-        imagefilledellipse( $image,$x,$y + 18,30 * $scale_multiplyer,24 * $scale_multiplyer,$this->dark_grey );
+        $cloud_coverage = $this->shape_size * ( $cloudy_pct / 100 );
+
+        imagefilledellipse( $image,$x,$y + 18,$cloud_coverage+5,$cloud_coverage+5,$this->dark_grey );
 
     }
 
