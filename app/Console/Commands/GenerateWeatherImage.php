@@ -141,7 +141,7 @@ class GenerateWeatherImage extends Command
         $leftMargin = 20;
         
         // Draw current image
-        $this->drawCurrentIcon( $image,$leftMargin + 32,$currentY-32 );
+        $this->drawCurrentIcon( $image,$leftMargin + 32,$currentY-43 );
 
         // Current temperature
         $text = $this->current["temp_{$this->heat_unit}"]. '°';
@@ -268,16 +268,15 @@ class GenerateWeatherImage extends Command
         $conditionText  = strtolower( $this->current['condition']['text'] );
         $cloudy_pct     = $this->current['cloud'];
 
-        //$conditionText = 'sun, lightning, rain';
-        $scale_multiplyer   = 2;
+        //$conditionText = 'sun, lightning, rain, snow, fog';
 
         if( $this->day_time ) {
 
-            $this->shape_size = $this->drawSun( $image,$scale_multiplyer,$x,$y );
+            $this->drawSun( $image,$x,$y );
 
         } else {
 
-            $this->shape_size = $this->drawMoon( $image,$scale_multiplyer,$x,$y );
+            $this->drawMoon( $image,$x,$y );
 
         }
 
@@ -332,14 +331,13 @@ class GenerateWeatherImage extends Command
 
     private function drawForecastIcon( $image,$x,$y )
     {
-        $scale_multiplyer   = 1;
         $conditionText      = strtolower( $this->current['condition']['text'] );
         $cloudy_pct         = $this->current['cloud'];
-        //$conditionText = 'sun, lightning, rain';
+        // /$conditionText = 'sun, lightning, rain, snow, fog';
         //var_dump( $conditionText,$cloudy_pct );
 
         // Sun
-        $this->shape_size = $this->drawSun( $image,$scale_multiplyer,$x + 25,$y + 15 );
+        $this->drawSun( $image,$x + 25,$y + 15 );
 
         // Rain        
         if( str_contains( $conditionText,'rain' ) ) {
@@ -386,16 +384,16 @@ class GenerateWeatherImage extends Command
 
     }
 
-    private function drawSun( $image,$scale_multiplyer,$x,$y ) {
+    private function drawSun( $image,$x,$y ) {
 
-        $shape_size = ( 32 ) * $scale_multiplyer;
+        $shape_size = ( 32 );
 
         imagefilledellipse( $image,$x,$y,$shape_size,$shape_size,$this->yellow );
 
         return $shape_size;
     }
 
-    private function drawMoon( $image,$scale_multiplyer,$x,$y ) {
+    private function drawMoon( $image,$x,$y ) {
 
         // Turn off alpha blending to ensure the alpha channel is preserved when drawing.
         imagealphablending($image, false);
@@ -414,7 +412,7 @@ class GenerateWeatherImage extends Command
         $center_y = 64 / 2;
         $radius = 32;
 
-        $shape_size = ( $radius ) * $scale_multiplyer;
+        $shape_size = ( $radius );
 
         // Draw a filled ellipse to represent the moon. Since the height and width are the same, it will be a perfect circle.
         imagefilledellipse( $image,$x,$y,$shape_size,$shape_size,$this->pale );
@@ -472,8 +470,8 @@ class GenerateWeatherImage extends Command
         imageline( $image, $x + 22, $y + 30,( $x + 42 ),( $y + 30 ), $this->white );
         imageline( $image, $x + 23, $y + 30,( $x + 43 ),( $y + 30 ), $this->white );
 
-        imageline( $image, $x + 42, $y + 30,( $x + 32 ),( $y + 45 ), $this->yellow );
-        imageline( $image, $x + 43, $y + 30,( $x + 33 ),( $y + 45 ), $this->yellow );
+        imageline( $image, $x + 42, $y + 30,( $x + 32 ),( $y + 45 ), $this->white );
+        imageline( $image, $x + 43, $y + 30,( $x + 33 ),( $y + 45 ), $this->white );
 
     }
 
@@ -487,7 +485,7 @@ class GenerateWeatherImage extends Command
 
     private function drawDarkClouds( $image,$x,$y ) {
 
-        imagefilledellipse( $image,$x,$y + 18,42,30,$this->dark_grey );
+        imagefilledellipse( $image,$x+10,$y + 8,42,30,$this->dark_grey );
 
     }
 
