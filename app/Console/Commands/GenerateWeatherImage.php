@@ -281,14 +281,6 @@ class GenerateWeatherImage extends Command
 
         }
 
-        // Clouds
-        if( $cloudy_pct >= 50 or str_contains( $conditionText, 'overcast' ) ) {
-
-            $this->drawDarkClouds( $image,$x,$y-5 );
-
-        }
-        $this->drawLightClouds( $image,$x,$y-5 );
-
         // Reset coords for weather
         $x = $x - 30;
         $y = $y - 10;
@@ -313,6 +305,14 @@ class GenerateWeatherImage extends Command
             $this->drawSleet( $image,$x,$y );
 
         }
+
+        // Clouds
+        if( $cloudy_pct >= 50 or str_contains( $conditionText, 'overcast' ) ) {
+
+            $this->drawDarkClouds( $image,$x,$y-5 );
+
+        }
+        $this->drawLightClouds( $image,$x,$y-5 );
 
         // Fog
         if( str_contains( $conditionText,'fog' ) or str_contains( $conditionText,'mist' ) ) {
@@ -341,14 +341,6 @@ class GenerateWeatherImage extends Command
         // Sun
         $this->shape_size = $this->drawSun( $image,$scale_multiplyer,$x + 25,$y + 15 );
 
-        // Clouds
-        if( $cloudy_pct >= 50 or str_contains($conditionText, 'overcast' ) ) {
-
-            $this->drawDarkClouds( $image,$x + 25,$y + 12 );
-
-        }
-        $this->drawLightClouds( $image,$x + 25,$y + 10 );
-
         // Rain        
         if( str_contains( $conditionText,'rain' ) ) {
 
@@ -369,6 +361,14 @@ class GenerateWeatherImage extends Command
             $this->drawSleet( $image,$x,$y );
 
         }
+
+        // Clouds
+        if( $cloudy_pct >= 50 or str_contains($conditionText, 'overcast' ) ) {
+
+            $this->drawDarkClouds( $image,$x + 25,$y + 12 );
+
+        }
+        $this->drawLightClouds( $image,$x + 25,$y + 10 );
 
         // Fog
         if( str_contains( $conditionText,'fog' ) or str_contains( $conditionText,'mist' ) ) {
