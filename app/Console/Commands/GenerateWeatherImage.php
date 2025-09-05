@@ -155,9 +155,11 @@ class GenerateWeatherImage extends Command
         }
 
         // Chances
+        /*
         $currentY += 40;
         $text = "Chance of Rain: " . $this->rain_chance . "%, Chance of Snow: " . $this->snow_chance . "%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
+        */
 
         // Wind
         $currentY += 40;
