@@ -155,9 +155,18 @@ class GenerateWeatherImage extends Command
         }
 
         // Chances
-        /*
+        /*foreach( $this->forecast as $index => $day ) {
+
+            if( $index == 0 ) {
+
+                $this->rain_chance  = $this->determineRainyness( $day );
+                $this->snow_chance  = $this->determineSnowyness( $day );
+
+            }
+
+        }
         $currentY += 40;
-        $text = "Chance of Rain: " . $this->rain_chance . "%, Chance of Snow: " . $this->snow_chance . "%";
+        $text = "Chance of Rain: {$this->rain_chance}%, Chance of Snow: {$this->snow_chance}%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
         */
 
@@ -202,7 +211,7 @@ class GenerateWeatherImage extends Command
 
             $this->drawForecastIcon( $image,$x,$y,$index );
 
-            $y += 80;
+            $y += 95;
 
             // High temperature
             $highTempText = $day['day']["maxtemp_{$this->heat_unit}"] . "°";
@@ -265,6 +274,42 @@ class GenerateWeatherImage extends Command
         $imagePath = public_path('images/out.png');
         imagepng($image, $imagePath);
         imagedestroy($image);
+    }
+
+    private function determineSnowyness( $day )
+    {
+        $sum_snowy      = 0;
+
+        foreach( $day['hour'] as $hour => $data ) {
+
+            if( $data['chance_of_snow'] ) {
+
+                $sum_snowy += $data['chance_of_snow'];
+
+            }
+
+        }
+
+        return $sum_snowy / 24;
+
+    }
+
+    private function determineRainyness( $day )
+    {
+        $sum_rainy      = 0;
+
+        foreach( $day['hour'] as $hour => $data ) {
+
+            if( $data['chance_of_rain'] ) {
+
+                $sum_rainy += $data['chance_of_rain'];
+
+            }
+
+        }
+
+        return $sum_rainy / 24;
+
     }
 
     private function determineCloudiness( $day ) 
