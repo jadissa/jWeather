@@ -491,9 +491,24 @@ class GenerateWeatherImage extends Command
 
     private function drawRain( $image,$x,$y ) {
 
+        $conditionText  = strtolower( $this->current['condition']['text'] );
+
+        if( str_contains( $conditionText,'light' ) ) {
+
+            $rain_count = 5;
+
+        } elseif( str_contains( $conditionText,'heavy' ) ) {
+
+            $rain_count = 25;
+
+        } else {
+
+            $rain_count = 10;
+
+        }
+
         $y = $y + 15;
-        $raindrop_count = 25;
-        for( $i = 0;$i < $raindrop_count;$i++ ) {
+        for( $i = 0;$i < $rain_count;$i++ ) {
 
             $new_x = mt_rand( 10,50 );
             $new_y = mt_rand( 30,40 );
@@ -505,7 +520,23 @@ class GenerateWeatherImage extends Command
 
     private function drawSnow( $image,$x,$y ) {
 
-        for( $i =0;$i < 20;$i++ ) {
+        $conditionText  = strtolower( $this->current['condition']['text'] );
+
+        if( str_contains( $conditionText,'light' ) ) {
+
+            $snow_count = 5;
+
+        } elseif( str_contains( $conditionText,'heavy' ) ) {
+
+            $snow_count = 25;
+
+        } else {
+
+            $snow_count = 10;
+
+        }
+
+        for( $i =0;$i < $snow_count;$i++ ) {
 
             imagefilledellipse( $image, $x + rand(5, 64),$y + rand(30, 55),5,5,$this->white );
 
