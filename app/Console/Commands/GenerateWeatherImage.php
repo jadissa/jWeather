@@ -155,12 +155,12 @@ class GenerateWeatherImage extends Command
         }
 
         // Chances
-        /*foreach( $this->forecast as $index => $day ) {
+        foreach( $this->forecast as $index => $day ) {
 
             if( $index == 0 ) {
 
-                $this->rain_chance  = $this->determineRainyness( $day );
-                $this->snow_chance  = $this->determineSnowyness( $day );
+                $this->rain_chance  = number_format( $this->determineRaininess( $day ), 1 );
+                $this->snow_chance  = number_format( $this->determineSnowiness( $day ), 1 );
 
             }
 
@@ -168,7 +168,7 @@ class GenerateWeatherImage extends Command
         $currentY += 40;
         $text = "Chance of Rain: {$this->rain_chance}%, Chance of Snow: {$this->snow_chance}%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
-        */
+
 
         // Wind
         $currentY += 40;
@@ -276,7 +276,7 @@ class GenerateWeatherImage extends Command
         imagedestroy($image);
     }
 
-    private function determineSnowyness( $day )
+    private function determineSnowiness( $day )
     {
         $sum_snowy      = 0;
 
@@ -294,7 +294,7 @@ class GenerateWeatherImage extends Command
 
     }
 
-    private function determineRainyness( $day )
+    private function determineRaininess( $day )
     {
         $sum_rainy      = 0;
 
