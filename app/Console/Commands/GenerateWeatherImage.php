@@ -121,7 +121,7 @@ class GenerateWeatherImage extends Command
         $this->rain_chance  = $this->forecast[0]['day']['daily_chance_of_rain'];
         $this->snow_chance  = $this->forecast[0]['day']['daily_chance_of_snow'];
 
-        $conditionText      = strtolower( $this->current['condition']['text'] );
+        $conditionText      = $this->current['condition']['text'];
 
         // Make transparent
         imagesavealpha($image, true);
