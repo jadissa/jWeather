@@ -401,7 +401,7 @@ class GenerateWeatherImage extends Command
     {
         $conditionText      = strtolower( $this->current['condition']['text'] );
         $cloudy_pct         = $this->current['cloud'];
-        // /$conditionText = 'sun, lightning, rain, snow, fog';
+        //$conditionText = 'sun, lightning, rain, snow, fog';
         //var_dump( $conditionText,$cloudy_pct );
 
         // Sun
