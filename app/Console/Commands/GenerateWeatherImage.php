@@ -576,8 +576,14 @@ class GenerateWeatherImage extends Command
 
     private function drawLightClouds( $image,$x,$y ) {
 
+        $cloudy_pct = $this->current['cloud'];
+
         imagefilledellipse( $image,$x-20,$y + 10,15,10,$this->light_grey );
-        imagefilledellipse( $image,$x,$y + 10,38,22,$this->grey );
+        if( $cloudy_pct > 25 ) {
+
+            imagefilledellipse( $image,$x,$y + 10,38,22,$this->grey );
+
+        }
         imagefilledellipse( $image,$x+20,$y + 14,30,10,$this->light_grey );
 
     }
