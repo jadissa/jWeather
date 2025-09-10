@@ -375,11 +375,11 @@ class GenerateWeatherImage extends Command
 
         if( $futureIndex["temp_{$this->heat_unit}"] > $currentIndex["temp_{$this->heat_unit}"] ) {
 
-            return __('messages.decreasing');
+            return __('messages.increasing');
 
         } else {
 
-            return __('messages.increasing');
+            return __('messages.decreasing');
         }
 
     }
