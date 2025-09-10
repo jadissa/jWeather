@@ -231,15 +231,23 @@ class GenerateWeatherImage extends Command
                 $day['day']['mintemp_f']            = 20;
                 $day['day']['avgtemp_f']            = ( $day['day']['maxtemp_f'] + $day['day']['mintemp_f'] ) / 2;
 
+                $day['day']['maxtemp_c']            = $this->fahrenheitToCelsius( $day['day']['maxtemp_f'] );
+                $day['day']['mintemp_c']            = $this->fahrenheitToCelsius( $day['day']['mintemp_f'] );;
+                $day['day']['avgtemp_c']            = $this->fahrenheitToCelsius( $day['day']['avgtemp_f'] );
+
             // Second day demo
             } elseif( $index >= 1 and config('services.weatherapi.demo_sesh') ) {
 
-                $this->current['condition']['text'] = 'overcast,rain';
+                $this->current['condition']['text'] = 'overcast,heavy rain';
                 $this->current['cloud']             = 50;
 
                 $day['day']['maxtemp_f']            = 80;
                 $day['day']['mintemp_f']            = 49;
                 $day['day']['avgtemp_f']            = ( $day['day']['maxtemp_f'] + $day['day']['mintemp_f'] ) / 2;
+
+                $day['day']['maxtemp_c']            = $this->fahrenheitToCelsius( $day['day']['maxtemp_f'] );
+                $day['day']['mintemp_c']            = $this->fahrenheitToCelsius( $day['day']['mintemp_f'] );;
+                $day['day']['avgtemp_c']            = $this->fahrenheitToCelsius( $day['day']['avgtemp_f'] );
 
             }
 
@@ -342,6 +350,10 @@ class GenerateWeatherImage extends Command
         $imagePath = public_path('images/out.png');
         imagepng($image, $imagePath);
         imagedestroy($image);
+    }
+
+    private function fahrenheitToCelsius(float $fahrenheit): float {
+        return ($fahrenheit - 32) * 5 / 9;
     }
 
     private function determineHeatDirection( $day )
