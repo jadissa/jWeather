@@ -179,7 +179,7 @@ class GenerateWeatherImage extends Command
 
         // Humidity
         $currentY += 40;
-        $humidityText = "Humidity: " . $this->current['humidity'] . "%";
+        $humidityText = "Cloudy: " . $this->current['cloud'] . "% , Humidity: " . $this->current['humidity'] . "%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $humidityText);
 
         // Wind
