@@ -34,11 +34,10 @@ HEAT_UNIT="f"
 # kpm or mph
 SPEED_UNIT="mph"
 PRECISION=1
-# es or en
-LANG="en"
 LATITUDE="xxxxxxxxx"
 LONGITUDE="yyyyyyyy"
 TIME_ZONE="America/Los_Angeles"
+APP_LOCALE=en
 DEMO_SESH=false
 ```
 

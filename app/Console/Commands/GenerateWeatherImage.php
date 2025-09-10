@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\App;
 use Exception;
 
 class GenerateWeatherImage extends Command
@@ -30,6 +31,8 @@ class GenerateWeatherImage extends Command
     {
 
         try {
+            App::setLocale('en');
+
             $weatherData = $this->fetchWeatherData();
             //print json_encode( $weatherData );exit;
             $this->createWeatherImage( $weatherData );
@@ -48,7 +51,7 @@ class GenerateWeatherImage extends Command
             'q' => config('services.weatherapi.latitude').','.config('services.weatherapi.longtitude'),
             'days' => config('services.weatherapi.days_to_fetch'),
             'alerts' => 'yes',
-            'lang' => config('services.weatherapi.lang'),
+            'lang' => config('services.weatherapi.app_locale'),
         ]);
 
         if ($response->successful()) {
@@ -144,7 +147,7 @@ class GenerateWeatherImage extends Command
 
         // Draw heading
         $locationName = $data['location']['name'];
-        $headingText = "Weather for $locationName (hourly)";
+        $headingText = __('messages.weather_for')." $locationName (" .__('messages.fetch_time').")";
         imagettftext($image, $this->font_size+5, 0, 20, 40, $this->font_color, $this->font_family, $headingText);
 
         // --- Left side: Current conditions ---
@@ -163,31 +166,31 @@ class GenerateWeatherImage extends Command
 
         // Increasing/decreasing
         $currentY += 40;
-        imagettftext($image, max( $this->font_size-12, 10 ), 0, $leftMargin + 96, $currentY-22, $this->font_color, $this->font_family, $this->temp_direction );
+        imagettftext($image, max( $this->font_size-12, 10 ), 0, $leftMargin + 80, $currentY-22, $this->font_color, $this->font_family, $this->temp_direction );
 
         // Alert data
         $currentY += 40;
         if (isset($data['alerts']['alert'][0])) {
-            $text = "Alert: " . $data['alerts']['alert'][0]['event'];
+            $text = __('messages.alert').": " . $data['alerts']['alert'][0]['event'];
             imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
         }
 
         // Snow/Rain
         $currentY += 40;
-        $text = "Chance of Rain: {$this->rain_chance}%, Chance of Snow: {$this->snow_chance}%";
+        $text = __('messages.chance_of_rain').": {$this->rain_chance}%, ".__('messages.chance_of_snow').": {$this->snow_chance}%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
         // Humidity
         $currentY += 40;
-        $humidityText = "Cloudy: " . $this->current['cloud'] . "% , Humidity: " . $this->current['humidity'] . "%";
+        $humidityText = __('messages.cloudy').": " . $this->current['cloud'] . "% , ".__('messages.humidity').": " . $this->current['humidity'] . "%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $humidityText);
 
         // Wind
         $currentY += 40;
-        $text = "Wind: " . $this->current["wind_{$this->speed_unit}"] . " $this->speed_unit " . $this->current['wind_dir'];
+        $text = __('messages.wind').": " . $this->current["wind_{$this->speed_unit}"] . " $this->speed_unit " . $this->current['wind_dir'];
         if( $this->current["gust_{$this->speed_unit}"] > 0 ) {
 
-            $text .= ", Gusts: " . $this->current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
+            $text .= ", ".__('messages.gusts').": " . $this->current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
 
         }
         imagettftext($image, max( $this->font_size-15, 10 ), 0, $leftMargin+45, $currentY, $this->font_color, $this->font_family, $text);
@@ -360,11 +363,11 @@ class GenerateWeatherImage extends Command
 
         if( $futureIndex["temp_{$this->heat_unit}"] > $currentIndex["temp_{$this->heat_unit}"] ) {
 
-            return 'Decreasing';
+            return __('messages.decreasing');
 
         } else {
 
-            return 'Increasing';
+            return __('messages.increasing');
         }
 
     }

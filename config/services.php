@@ -48,7 +48,7 @@ return [
         'precision' => env('PRECISION', '1'),
         'latitude' => env('LATITUDE', '-106.5798192153439'),
         'longtitude' => env('LONGITUDE', '31.846848732688155'),
-        'lang' => env('LANG', 'en'),
+        'app_locale' => env('APP_LOCALE', 'en'),
     ],
 
 ];
