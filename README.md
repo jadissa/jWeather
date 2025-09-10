@@ -16,7 +16,7 @@ PHP, GeekTool, WeatherAPI account (yes, it is free)
 ## How
 Note:
 - Requires GeekTool, which can be downloaded from https://www.tynsoe.org/geektool/
-- Requires a weather API key from https://weatherapi.com
+- Requires a weather API key from https://www.weatherapi.com/
 
 - Register App for use at weatherapi.com
 - Generate your API key

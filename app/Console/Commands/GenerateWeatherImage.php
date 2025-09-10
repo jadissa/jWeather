@@ -123,6 +123,20 @@ class GenerateWeatherImage extends Command
 
         $conditionText      = $this->current['condition']['text'];
 
+        // Daily data
+        foreach( $this->forecast as $index => $day ) {
+
+            if( $index == 0 ) {
+
+                $this->rain_chance      = number_format( $this->determineRaininess( $day ), 1 );
+                $this->snow_chance      = number_format( $this->determineSnowiness( $day ), 1 );
+
+            }
+
+            $this->temp_direction       = $this->determineHeatDirection( $day );
+
+        }
+
         // Make transparent
         imagesavealpha($image, true);
         $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
@@ -147,6 +161,10 @@ class GenerateWeatherImage extends Command
         $text = $this->current["temp_{$this->heat_unit}"]. '°';
         imagettftext($image, $this->font_size+8, 0, $leftMargin + 80, $currentY-22, $this->font_color, $this->font_family, $text);
 
+        // Increasing/decreasing
+        $currentY += 40;
+        imagettftext($image, max( $this->font_size-12, 10 ), 0, $leftMargin + 96, $currentY-22, $this->font_color, $this->font_family, $this->temp_direction );
+
         // Alert data
         $currentY += 40;
         if (isset($data['alerts']['alert'][0])) {
@@ -154,20 +172,15 @@ class GenerateWeatherImage extends Command
             imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
         }
 
-        // Averages
-        foreach( $this->forecast as $index => $day ) {
-
-            if( $index == 0 ) {
-
-                $this->rain_chance      = number_format( $this->determineRaininess( $day ), 1 );
-                $this->snow_chance      = number_format( $this->determineSnowiness( $day ), 1 );
-
-            }
-
-        }
+        // Snow/Rain
         $currentY += 40;
         $text = "Chance of Rain: {$this->rain_chance}%, Chance of Snow: {$this->snow_chance}%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
+
+        // Humidity
+        $currentY += 40;
+        $humidityText = "Humidity: " . $this->current['humidity'] . "%";
+        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $humidityText);
 
         // Wind
         $currentY += 40;
@@ -177,17 +190,14 @@ class GenerateWeatherImage extends Command
             $text .= ", Gusts: " . $this->current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
 
         }
-        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
+        imagettftext($image, max( $this->font_size-15, 10 ), 0, $leftMargin+45, $currentY, $this->font_color, $this->font_family, $text);
 
-        // Clouds
+        // Condition/Clouds
+        /*
         $currentY += 40;
         $text = "$conditionText, Cloud Coverage: " . $this->current['cloud'] . "%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
-
-        // Humidity
-        $currentY += 40;
-        $humidityText = "Humidity: " . $this->current['humidity'] . "%";
-        imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $humidityText);
+        */
 
         // --- Right side: 3-day forecast ---
         $rightMargin = 650;
@@ -307,6 +317,34 @@ class GenerateWeatherImage extends Command
         $imagePath = public_path('images/out.png');
         imagepng($image, $imagePath);
         imagedestroy($image);
+    }
+
+    private function determineHeatDirection( $day )
+    {
+
+        $currentDateTime    = new \DateTime();
+
+        $futureDateTime     = new \DateTime();
+
+        $currentHour        = $currentDateTime->format('H');
+
+        $futureDateTime->modify('+3 hours');
+
+        $futureHour         = $futureDateTime->format('H');
+
+        $futureIndex        = $day['hour'][$futureHour] or 1;
+
+        $currentIndex       = $day['hour'][$currentHour] or 0;
+
+        if( $futureIndex["temp_{$this->heat_unit}"] > $currentIndex["temp_{$this->heat_unit}"] ) {
+
+            return 'Decreasing';
+
+        } else {
+
+            return 'Increasing';
+        }
+
     }
 
     private function determineSnowiness( $day )
