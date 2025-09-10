@@ -39,6 +39,7 @@ LANG="en"
 LATITUDE="xxxxxxxxx"
 LONGITUDE="yyyyyyyy"
 TIME_ZONE="America/Los_Angeles"
+DEMO_SESH=false
 ```
 
 - Open GeekTool

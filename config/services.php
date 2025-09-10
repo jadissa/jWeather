@@ -34,7 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+
     'weatherapi' => [
+        'demo_sesh' => env('DEMO_SESH', false),
         'weatherapi_key' => env('WEATHERAPI_KEY', 'Default Value'),
         'images_dir' => env('IMAGE_DIRECTORY', ''),
         'days_to_fetch' => env('DAYS_TO_FETCH', 7),
@@ -47,6 +49,6 @@ return [
         'latitude' => env('LATITUDE', '-106.5798192153439'),
         'longtitude' => env('LONGITUDE', '31.846848732688155'),
         'lang' => env('LANG', 'en'),
-    ]
+    ],
 
 ];

@@ -122,7 +122,7 @@ class GenerateWeatherImage extends Command
         $this->snow_chance  = $this->forecast[0]['day']['daily_chance_of_snow'];
 
         $conditionText      = $this->current['condition']['text'];
-
+        //print'<pre>';print_r( $this->current );print'</pre>';
         // Daily data
         foreach( $this->forecast as $index => $day ) {
 
@@ -215,8 +215,30 @@ class GenerateWeatherImage extends Command
             $y += 20;
 
             $this->current['condition'] = $day['day']['condition'];
-
             $this->current['cloud']     = $this->determineCloudiness( $day );
+
+
+            // Third day demo
+            if( $index >= 2 and config('services.weatherapi.demo_sesh') ) {
+
+                $this->current['condition']['text'] = 'overcast,rain';
+                $this->current['cloud']             = 100;
+
+                $day['day']['maxtemp_f']            = 60;
+                $day['day']['mintemp_f']            = 20;
+                $day['day']['avgtemp_f']            = ( $day['day']['maxtemp_f'] + $day['day']['mintemp_f'] ) / 2;
+
+            // Second day demo
+            } elseif( $index >= 1 and config('services.weatherapi.demo_sesh') ) {
+
+                $this->current['condition']['text'] = 'overcast,rain';
+                $this->current['cloud']             = 50;
+
+                $day['day']['maxtemp_f']            = 80;
+                $day['day']['mintemp_f']            = 49;
+                $day['day']['avgtemp_f']            = ( $day['day']['maxtemp_f'] + $day['day']['mintemp_f'] ) / 2;
+
+            }
 
             $this->drawForecastIcon( $image,$x,$y,$index );
 
@@ -445,7 +467,7 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( $cloudy_pct >= 50 or str_contains( $conditionText, 'overcast' ) ) {
+        if( $cloudy_pct >= 75 or str_contains( $conditionText, 'overcast' ) ) {
 
             $this->drawDarkClouds( $image,$x+30,$y-5+10 );
 
@@ -500,7 +522,7 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( $cloudy_pct >= 50 or str_contains($conditionText, 'overcast' ) ) {
+        if( $cloudy_pct >= 75 or str_contains($conditionText, 'overcast' ) ) {
 
             $this->drawDarkClouds( $image,$x + 25,$y + 12 );
 
