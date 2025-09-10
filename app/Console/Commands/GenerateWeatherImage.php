@@ -467,7 +467,7 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( $cloudy_pct >= 75 or str_contains( $conditionText, 'overcast' ) ) {
+        if( str_contains( $conditionText, 'overcast' ) ) {
 
             $this->drawDarkClouds( $image,$x+30,$y-5+10 );
 
@@ -522,7 +522,7 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( $cloudy_pct >= 75 or str_contains($conditionText, 'overcast' ) ) {
+        if( str_contains($conditionText, 'overcast' ) ) {
 
             $this->drawDarkClouds( $image,$x + 25,$y + 12 );
 
