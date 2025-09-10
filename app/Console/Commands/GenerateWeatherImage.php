@@ -88,7 +88,7 @@ class GenerateWeatherImage extends Command
     {
 
         // Define image
-        $width              = 1092;
+        $width              = 1200;
         $height             = 448;
         $image              = imagecreatetruecolor($width, $height);
 
@@ -133,12 +133,12 @@ class GenerateWeatherImage extends Command
         $headingText = "Weather for $locationName (hourly)";
         imagettftext($image, $this->font_size+5, 0, 20, 40, $this->font_color, $this->font_family, $headingText);
 
-        // Draw horizontal line
-        imageline($image, 0, 60, $width, 60, $this->font_color);
-
         // --- Left side: Current conditions ---
         $currentY = 150;
         $leftMargin = 20;
+
+        // Draw horizontal line
+        imageline($image, $leftMargin, 60, $width, 60, $this->font_color);
         
         // Draw current image
         $this->drawCurrentIcon( $image,$leftMargin + 32,$currentY-43 );
@@ -154,13 +154,13 @@ class GenerateWeatherImage extends Command
             imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
         }
 
-        // Chances
+        // Averages
         foreach( $this->forecast as $index => $day ) {
 
             if( $index == 0 ) {
 
-                $this->rain_chance  = number_format( $this->determineRaininess( $day ), 1 );
-                $this->snow_chance  = number_format( $this->determineSnowiness( $day ), 1 );
+                $this->rain_chance      = number_format( $this->determineRaininess( $day ), 1 );
+                $this->snow_chance      = number_format( $this->determineSnowiness( $day ), 1 );
 
             }
 
@@ -168,7 +168,6 @@ class GenerateWeatherImage extends Command
         $currentY += 40;
         $text = "Chance of Rain: {$this->rain_chance}%, Chance of Snow: {$this->snow_chance}%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
-
 
         // Wind
         $currentY += 40;
@@ -182,7 +181,7 @@ class GenerateWeatherImage extends Command
 
         // Clouds
         $currentY += 40;
-        $text = "Cloud Coverage: " . $this->current['cloud'] . "%, $conditionText";
+        $text = "$conditionText, Cloud Coverage: " . $this->current['cloud'] . "%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
         // Humidity
@@ -222,10 +221,8 @@ class GenerateWeatherImage extends Command
             // Vertical temperature line (20x100 pixel, filled dynamically)
             $tempLineHeight = 100;
             $tempLineWidth = 20;
-            $lowTemp = $day['day']["mintemp_{$this->heat_unit}"];
             $highTemp = $day['day']["maxtemp_{$this->heat_unit}"];
-            $tempRange = 40; // Assuming a 40 degree range for the line
-            $fillHeight = min($tempLineHeight, max(0, ($highTemp / $tempRange) * $tempLineHeight));
+            $fillHeight = min( $tempLineHeight,$highTemp );
 
             // Top
             imagefilledarc(
@@ -239,6 +236,42 @@ class GenerateWeatherImage extends Command
                 $this->font_color,
                 IMG_ARC_PIE
             );
+
+            // Average high temperature
+            $avgTemp[ $index ]  = number_format( $day['day']["avgtemp_{$this->heat_unit}"], 1 );
+            $avgTempText = $avgTemp[ $index ];
+            /*
+            imageline( 
+                $image,
+                $x+15 + ($tempLineWidth / 2) - 10,
+                $y-15,
+                $x+15 + ($tempLineWidth / 2) + 15,
+                ( $y + $fillHeight ) / 2,
+                $this->font_color );
+            */
+            // Assuming the variables for the rectangle are already defined.
+            // The image resource $image, and the color $this->font_color are also defined.
+
+            // Define the coordinates of the rectangle to make the calculation clearer
+            $rect_x1 = $x + 15 + ($tempLineWidth / 2) - 10;
+            $rect_y1 = $y;
+            $rect_x2 = $x + 15 + ($tempLineWidth / 2) + 10;
+            $rect_y2 = $y + $fillHeight;
+
+            // Calculate the center y-coordinate of the rectangle
+            $line_y = $rect_y1 + (($rect_y2 - $rect_y1) / 2);
+
+            // Calculate the center x-coordinate of the rectangle
+            $center_x = $rect_x1 + (($rect_x2 - $rect_x1) / 2);
+
+            // Calculate the line start and end x-coordinates (26 pixels wide)
+            $line_width = 46;
+            $line_x1 = $center_x - ($line_width / 2);
+            $line_x2 = $center_x + ($line_width / 2) - 1; // Subtract 1 for inclusive pixel count
+
+            // Draw the 1-pixel horizontal line
+            imageline($image, $line_x1, $line_y, $line_x2, $line_y, $this->font_color);
+            imagettftext($image, max( $this->font_size-20, 10 ), 0, $line_x2+7, $line_y+5, $this->font_color, $this->font_family, $avgTempText);
 
             // Middle
             imagefilledrectangle(
@@ -278,56 +311,56 @@ class GenerateWeatherImage extends Command
 
     private function determineSnowiness( $day )
     {
-        $sum_snowy      = 0;
+        $sum      = 0;
 
         foreach( $day['hour'] as $hour => $data ) {
 
             if( $data['chance_of_snow'] ) {
 
-                $sum_snowy += $data['chance_of_snow'];
+                $sum += $data['chance_of_snow'];
 
             }
 
         }
 
-        return $sum_snowy / 24;
+        return $sum / 24;
 
     }
 
     private function determineRaininess( $day )
     {
-        $sum_rainy      = 0;
+        $sum      = 0;
 
         foreach( $day['hour'] as $hour => $data ) {
 
             if( $data['chance_of_rain'] ) {
 
-                $sum_rainy += $data['chance_of_rain'];
+                $sum += $data['chance_of_rain'];
 
             }
 
         }
 
-        return $sum_rainy / 24;
+        return $sum / 24;
 
     }
 
     private function determineCloudiness( $day ) 
     {
 
-        $sum_cloudy     = 0;
+        $sum     = 0;
 
         foreach( $day['hour'] as $hour => $data ) {
 
             if( $data['cloud'] ) {
 
-                $sum_cloudy += $data['cloud'];
+                $sum += $data['cloud'];
 
             }
 
         }
 
-        return $sum_cloudy / 24;
+        return $sum / 24;
 
     }
 
@@ -578,14 +611,21 @@ class GenerateWeatherImage extends Command
 
         $cloudy_pct = $this->current['cloud'];
 
-        imagefilledellipse( $image,$x-20,$y + 10,15,10,$this->light_grey );
+        if( $cloudy_pct > 0 ) {
+
+            imagefilledellipse( $image,$x-20,$y + 10,15,10,$this->light_grey );
         
+        }
         if( $cloudy_pct > 25 ) {
 
             imagefilledellipse( $image,$x,$y + 10,38,22,$this->grey );
 
         }
-        imagefilledellipse( $image,$x+20,$y + 14,30,10,$this->light_grey );
+        if( $cloudy_pct > 0 ) {
+            
+            imagefilledellipse( $image,$x+20,$y + 14,30,10,$this->light_grey );
+
+        }
 
     }
 
