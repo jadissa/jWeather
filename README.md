@@ -81,7 +81,7 @@ Any Mac system that has php installed
 
 ## FAQ
 - You can change size of font in your .evn, along with other settings
-- If you have trouble with anything, it will most likely be the font family. You might need to find a replacement font on your system. You can simlink your font path to the one in public/fonts if so
+- The reason this project requires MacOS is because I'm not aware of aanother way besides GeekTool to easily place an image on your desktop in a certain position. You could technically try alternatives to solve this, as I'm sure they exist
 - You may need to run ```/path/to/php /path/to/jWeather/artisan weather:generate-image``` to see those changes immediately
 
 ## Issues

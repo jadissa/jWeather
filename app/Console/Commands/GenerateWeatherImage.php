@@ -579,6 +579,7 @@ class GenerateWeatherImage extends Command
         $cloudy_pct = $this->current['cloud'];
 
         imagefilledellipse( $image,$x-20,$y + 10,15,10,$this->light_grey );
+        
         if( $cloudy_pct > 25 ) {
 
             imagefilledellipse( $image,$x,$y + 10,38,22,$this->grey );
