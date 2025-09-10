@@ -31,7 +31,7 @@ class GenerateWeatherImage extends Command
     {
 
         try {
-            App::setLocale('en');
+            App::setLocale(config('services.weatherapi.app_locale'));
 
             $weatherData = $this->fetchWeatherData();
             //print json_encode( $weatherData );exit;
