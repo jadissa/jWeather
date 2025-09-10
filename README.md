@@ -5,10 +5,13 @@
 [![License](https://img.shields.io/badge/license-GPL-blue)](LICENSE)
 
 ## Why
-Forecast.io died and I needed a weather monitor replacement
+Forecast.io died and I needed a weather monitor replacement. 
+
+## Thanks
+This project is based on: https://github.com/nickroberts/geektool-forecast.io-weather
 
 ## Requirements
-php,composer
+PHP, GeekTool, WeatherAPI account (yes, it is free)
 
 ## How
 Note:
@@ -63,10 +66,6 @@ Note:
 - In your terminal, run ```crontab -e```
 - Paste the following into your crontab:
 - ```0 * * * * /path/to/php /path/to/jWeather/artisan weather:generate-image```
-- Ensure your terminal has full disk access if issues are encountered
-
-Note:
-- Full disk access for your terminal should not be necessary, as it has not been during my testing
 
 #### Enable Weather Display
 - Drag new 'Image' Geeklet to your desktop
@@ -81,7 +80,7 @@ Any Mac system that has php installed
 
 ## FAQ
 - You can change size of font in your .evn, along with other settings
-- The reason this project requires MacOS is because I'm not aware of aanother way besides GeekTool to easily place an image on your desktop in a certain position. You could technically try alternatives to solve this, as I'm sure they exist
+- The reason this project requires MacOS is because I'm not aware of another way besides GeekTool to easily place an image on your desktop in a certain position. You could technically try alternatives to solve this, as I'm sure they exist
 - You may need to run ```/path/to/php /path/to/jWeather/artisan weather:generate-image``` to see those changes immediately
 
 ## Issues
