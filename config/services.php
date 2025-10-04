@@ -49,6 +49,7 @@ return [
         'latitude' => env('LATITUDE', '-106.5798192153439'),
         'longtitude' => env('LONGITUDE', '31.846848732688155'),
         'app_locale' => env('APP_LOCALE', 'en'),
+        'time_zone' => env('TIME_ZONE','America/Los_Angeles'),
     ],
 
 ];

@@ -359,21 +359,20 @@ class GenerateWeatherImage extends Command
     private function determineHeatDirection( $day )
     {
 
-        $hours_from_now     = 3;
+        $futureHour         = date('h', strtotime('+3 hour'));
 
-        $currentDateTime    = new \DateTime();
+        $currentHour        = date('h');
 
-        $futureDateTime     = new \DateTime();
+        $futureIndex        = $day['hour'][$futureHour] ?? 0;
 
-        $currentHour        = $currentDateTime->format('H');
+        $currentIndex       = $day['hour'][$currentHour] ?? 0;
 
-        $futureDateTime->modify("+ $hours_from_now hours");
+        if( $futureIndex == 0 or $currentIndex == 0 ) {
 
-        $futureHour         = $futureDateTime->format('H');
+            return;
+            
+        }
 
-        $futureIndex        = $day['hour'][$futureHour];
-
-        $currentIndex       = $day['hour'][$currentHour];
         if( $futureIndex["temp_{$this->heat_unit}"] > $currentIndex["temp_{$this->heat_unit}"] ) {
 
             return __('messages.increasing');
