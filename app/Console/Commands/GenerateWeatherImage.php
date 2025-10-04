@@ -136,7 +136,7 @@ class GenerateWeatherImage extends Command
 
             }
 
-            $this->temp_direction       = $this->determineHeatDirection( $day );
+            //$this->temp_direction       = $this->determineHeatDirection( $day );
 
         }
 
@@ -165,22 +165,16 @@ class GenerateWeatherImage extends Command
         $currentY = $column_y+40;
 
         // Current temperature
+        $currentY+=50;
         $text = $this->current["temp_{$this->heat_unit}"]. '°';
-        imagettftext($image, $this->font_size*3, 0, $leftMargin + 80, $currentY+22, $this->font_color, $this->font_family, $text);
+        imagettftext($image, $this->font_size*4, 0, $leftMargin + 60, $currentY, $this->font_color, $this->font_family, $text);
 
         // Increasing/decreasing
-        $currentY += 40;
-        imagettftext($image, max( $this->font_size-12, 10 ), 0, $leftMargin + 80, $currentY-22, $this->font_color, $this->font_family, $this->temp_direction );
-
-        // Alert data
-        $currentY += 40;
-        if (isset($data['alerts']['alert'][0])) {
-            $text = __('messages.alert').": " . $data['alerts']['alert'][0]['event'];
-            imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
-        }
+        //$currentY += 40;
+        //imagettftext($image, max( $this->font_size-12, 10 ), 0, $leftMargin + 80, $currentY, $this->font_color, $this->font_family, $this->temp_direction );
 
         // Snow/Rain
-        $currentY += 40;
+        $currentY += 50;
         $text = __('messages.chance_of_rain').": {$this->rain_chance}%, ".__('messages.chance_of_snow').": {$this->snow_chance}%";
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
@@ -197,7 +191,23 @@ class GenerateWeatherImage extends Command
             $text .= ", ".__('messages.gusts').": " . $this->current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
 
         }
-        imagettftext($image, max( $this->font_size-15, 10 ), 0, $leftMargin+45, $currentY, $this->font_color, $this->font_family, $text);
+        imagettftext($image, max( $this->font_size/2, 10 ), 0, $leftMargin+45, $currentY, $this->font_color, $this->font_family, $text);
+
+        // Alert data
+        $currentY += 60;
+        if (isset($data['alerts']['alert'][0])) {
+            $text = __('messages.alert').": " . $data['alerts']['alert'][0]['event'];
+            print'<pre>';print_r( $data['alerts']['alert']);print'</pre>';
+            imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
+
+            $currentY += 40;
+
+            $text = __('messages.alert').": " . $data['alerts']['alert'][0]['desc'];
+            $text = str_replace(array("\n", "\r"), '', $text);
+            $text = wordwrap( $text,80,"\n",true );
+
+            imagettftext($image, $this->font_size/2, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
+        }
 
         // Condition/Clouds
         /*
