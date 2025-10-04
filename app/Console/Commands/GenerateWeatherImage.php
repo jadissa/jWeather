@@ -146,23 +146,27 @@ class GenerateWeatherImage extends Command
         imagefill($image, 0, 0, $transparent);
 
         // Draw heading
+        $currentY = 40;
+        $top_y = $currentY;
         $locationName = $data['location']['name'];
         $headingText = __('messages.weather_for')." $locationName (" .__('messages.fetch_time').")";
-        imagettftext($image, $this->font_size+5, 0, 20, 40, $this->font_color, $this->font_family, $headingText);
+        imagettftext($image, $this->font_size+5, 0, 20, $top_y, $this->font_color, $this->font_family, $headingText);
 
         // --- Left side: Current conditions ---
-        $currentY = 150;
+        $currentY += 100;
         $leftMargin = 20;
 
         // Draw horizontal line
-        imageline($image, $leftMargin, 60, $width, 60, $this->font_color);
+        imageline($image, $leftMargin, 50, $width, 50, $this->font_color);
         
         // Draw current image
-        $this->drawCurrentIcon( $image,$leftMargin + 32,$currentY-43 );
+        $column_y = $currentY-43;
+        $this->drawCurrentIcon( $image,$leftMargin + 32,$column_y );
+        $currentY = $column_y+40;
 
         // Current temperature
         $text = $this->current["temp_{$this->heat_unit}"]. '°';
-        imagettftext($image, $this->font_size+8, 0, $leftMargin + 80, $currentY-22, $this->font_color, $this->font_family, $text);
+        imagettftext($image, $this->font_size*3, 0, $leftMargin + 80, $currentY+22, $this->font_color, $this->font_family, $text);
 
         // Increasing/decreasing
         $currentY += 40;
@@ -209,13 +213,13 @@ class GenerateWeatherImage extends Command
         foreach( $this->forecast as $index => $day ) {
 
             $x = $rightMargin + ($index * $columnWidth) + 50;
-            $y = 100;
+            $currentY = $top_y;
 
             // Day name (e.g., Mon, Tues)
             $dayName = date('D', strtotime($day['date']));
-            imagettftext($image, $this->font_size, 0, $x, $y, $this->font_color, $this->font_family, $dayName);
+            imagettftext($image, $this->font_size, 0, $x, $top_y, $this->font_color, $this->font_family, $dayName);
 
-            $y += 20;
+            $currentY += 55;
 
             $this->current['condition'] = $day['day']['condition'];
             $this->current['cloud']     = $this->determineCloudiness( $day );
@@ -251,15 +255,16 @@ class GenerateWeatherImage extends Command
 
             }
 
-            $this->drawForecastIcon( $image,$x,$y,$index );
+            $currentY = $column_y;
+            $this->drawForecastIcon( $image,$x,$column_y,$index );
 
-            $y += 95;
+            $currentY += 95;
 
             // High temperature
             $highTempText = $day['day']["maxtemp_{$this->heat_unit}"] . "°";
-            imagettftext($image, $this->font_size-5, 0, $x, $y, $this->font_color, $this->font_family, $highTempText);
+            imagettftext($image, $this->font_size-5, 0, $x, $currentY, $this->font_color, $this->font_family, $highTempText);
 
-            $y += 30;
+            $currentY += 30;
 
             // Vertical temperature line (20x100 pixel, filled dynamically)
             $tempLineHeight = 100;
@@ -271,7 +276,7 @@ class GenerateWeatherImage extends Command
             imagefilledarc(
                 $image,
                 $x+15 + $tempLineWidth / 2, // X-coordinate of the center of the arc
-                $y, // Y-coordinate of the center of the arc
+                $currentY, // Y-coordinate of the center of the arc
                 $tempLineWidth, // Width of the ellipse
                 20, // Height of the ellipse
                 180, // Start angle (top half of a circle)
@@ -287,9 +292,9 @@ class GenerateWeatherImage extends Command
             imageline( 
                 $image,
                 $x+15 + ($tempLineWidth / 2) - 10,
-                $y-15,
+                $currentY-15,
                 $x+15 + ($tempLineWidth / 2) + 15,
-                ( $y + $fillHeight ) / 2,
+                ( $currentY + $fillHeight ) / 2,
                 $this->font_color );
             */
             // Assuming the variables for the rectangle are already defined.
@@ -297,9 +302,9 @@ class GenerateWeatherImage extends Command
 
             // Define the coordinates of the rectangle to make the calculation clearer
             $rect_x1 = $x + 15 + ($tempLineWidth / 2) - 10;
-            $rect_y1 = $y;
+            $rect_y1 = $currentY;
             $rect_x2 = $x + 15 + ($tempLineWidth / 2) + 10;
-            $rect_y2 = $y + $fillHeight;
+            $rect_y2 = $currentY + $fillHeight;
 
             // Calculate the center y-coordinate of the rectangle
             $line_y = $rect_y1 + (($rect_y2 - $rect_y1) / 2);
@@ -320,9 +325,9 @@ class GenerateWeatherImage extends Command
             imagefilledrectangle(
                 $image,
                 $x+15 + ($tempLineWidth / 2) - 10,
-                $y,
+                $currentY,
                 $x+15 + ($tempLineWidth / 2) + 10,
-                $y + $fillHeight,
+                $currentY + $fillHeight,
                 $this->font_color
             );
 
@@ -330,7 +335,7 @@ class GenerateWeatherImage extends Command
             imagefilledarc(
                 $image,
                 $x+15 + $tempLineWidth / 2, // X-coordinate of the center of the arc
-                $y + $fillHeight, // Y-coordinate of the center of the arc
+                $currentY + $fillHeight, // Y-coordinate of the center of the arc
                 $tempLineWidth, // Width of the ellipse
                 20, // Height of the ellipse
                 0, // Start angle (bottom half of a circle)
@@ -339,11 +344,11 @@ class GenerateWeatherImage extends Command
                 IMG_ARC_PIE
             );
 
-            $y += $tempLineHeight + 55;
+            $currentY += $tempLineHeight + 55;
 
             // Low temperature
             $lowTempText = $day['day']["mintemp_{$this->heat_unit}"] . "°";
-            imagettftext($image, $this->font_size-5, 0, $x, $y, $this->font_color, $this->font_family, $lowTempText);
+            imagettftext($image, $this->font_size-5, 0, $x, $currentY, $this->font_color, $this->font_family, $lowTempText);
         }
 
         // Save the image
