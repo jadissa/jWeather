@@ -197,7 +197,7 @@ class GenerateWeatherImage extends Command
         $currentY += 60;
         if (isset($data['alerts']['alert'][0])) {
             $text = __('messages.alert').": " . $data['alerts']['alert'][0]['event'];
-            print'<pre>';print_r( $data['alerts']['alert']);print'</pre>';
+            //print'<pre>';print_r( $data['alerts']['alert']);print'</pre>';
             imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
             $currentY += 40;
