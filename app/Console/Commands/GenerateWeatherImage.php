@@ -577,7 +577,7 @@ class GenerateWeatherImage extends Command
 
     private function drawSun( $image,$x,$y ) {
 
-        $shape_size = ( 32 );
+        $shape_size = ( 36 );
 
         imagefilledellipse( $image,$x,$y,$shape_size,$shape_size,$this->yellow );
 
@@ -601,7 +601,7 @@ class GenerateWeatherImage extends Command
         // Calculate the center and radius for the circle.
         $center_x = 64 / 2;
         $center_y = 64 / 2;
-        $radius = 32;
+        $radius = 36;
 
         $shape_size = ( $radius );
 
