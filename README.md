@@ -83,6 +83,9 @@ Any Mac system that has php installed
 - The reason this project requires MacOS is because I'm not aware of another way besides GeekTool to easily place an image on your desktop in a certain position. You could technically try alternatives to solve this, as I'm sure they exist
 - You may need to run ```/path/to/php /path/to/jWeather/artisan weather:generate-image``` to see those changes immediately
 
+## Tests
+`cd /path/to/jWeather && php artisan test --filter GenerateWeatherImageTest`
+
 ## Issues
 https://github.com/jadissa/jWeather/issues
 - If the weather API ever stops working, weather.gov currently provides a free service and this code could be updated to support that API instead: https://api.weather.gov/
