@@ -20,7 +20,7 @@ Note:
 
 - Register App for use at weatherapi.com
 - Generate your API key
-- Paste your API key and other configs into a .env file in the root of this project:
+- Paste your API key and other configs into a `.env` file in the root of this project:
 ```
 # Weather Options
 WEATHERAPI_KEY="xxxxxxxxxxxx"
@@ -79,7 +79,7 @@ Note:
 Any Mac system that has php installed
 
 ## FAQ
-- You can change size of font in your .evn, along with other settings
+- You can change size of font in your `.env`, along with other settings
 - The reason this project requires MacOS is because I'm not aware of another way besides GeekTool to easily place an image on your desktop in a certain position. You could technically try alternatives to solve this, as I'm sure they exist
 - You may need to run ```/path/to/php /path/to/jWeather/artisan weather:generate-image``` to see those changes immediately
 
