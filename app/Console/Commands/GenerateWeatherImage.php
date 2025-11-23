@@ -676,6 +676,21 @@ class GenerateWeatherImage extends Command
 
     private function drawFog( $image,$x,$y ) {
 
+        $conditionText  = strtolower( $this->current['condition']['text'] );
+        $thickness      = 1;
+
+        if( str_contains( $conditionText,'light' ) ) {
+
+            $thickness = 3;
+
+        } elseif( str_contains( $conditionText,'heavy' ) ) {
+
+            $thickness = 6;
+
+        }
+
+        imagesetthickness( $image,$thickness );
+
         for( $i = 0;$i < 5;$i++ ) {
 
             imageline($image, $x, $y + $i * 10,( $x + 64 ),( $y + $i * 10 ), $this->grey);
@@ -686,14 +701,14 @@ class GenerateWeatherImage extends Command
 
     private function drawLightning( $image,$x,$y ) {
 
-        imageline( $image, $x + 32, $y + 15,( $x + 22 ),( $y + 30 ), $this->white );
-        imageline( $image, $x + 33, $y + 15,( $x + 23 ),( $y + 30 ), $this->white );
+        imageline( $image,$x + 32, $y + 15,( $x + 22 ),( $y + 30 ),$this->white );
+        imageline( $image,$x + 33, $y + 15,( $x + 23 ),( $y + 30 ),$this->white );
 
-        imageline( $image, $x + 22, $y + 30,( $x + 42 ),( $y + 30 ), $this->white );
-        imageline( $image, $x + 23, $y + 30,( $x + 43 ),( $y + 30 ), $this->white );
+        imageline( $image,$x + 22, $y + 30,( $x + 42 ),( $y + 30 ),$this->white );
+        imageline( $image,$x + 23, $y + 30,( $x + 43 ),( $y + 30 ),$this->white );
 
-        imageline( $image, $x + 42, $y + 30,( $x + 32 ),( $y + 45 ), $this->white );
-        imageline( $image, $x + 43, $y + 30,( $x + 33 ),( $y + 45 ), $this->white );
+        imageline( $image,$x + 42, $y + 30,( $x + 32 ),( $y + 45 ),$this->white );
+        imageline( $image,$x + 43, $y + 30,( $x + 33 ),( $y + 45 ),$this->white );
 
     }
 
