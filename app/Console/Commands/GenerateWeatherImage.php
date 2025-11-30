@@ -146,10 +146,11 @@ class GenerateWeatherImage extends Command
         imagefill($image, 0, 0, $transparent);
 
         // Draw heading
-        $currentY = 40;
-        $top_y = $currentY;
-        $locationName = $data['location']['name'];
-        $headingText = __('messages.weather_for')." $locationName (" .__('messages.fetch_time').")";
+        $currentY       = 40;
+        $top_y          = $currentY;
+        $timestamp      = date( 'D: h:i:s' );
+        $locationName   = $data['location']['name'];
+        $headingText    = "$locationName, $timestamp";
         imagettftext($image, $this->font_size+5, 0, 20, $top_y, $this->font_color, $this->font_family, $headingText);
 
         // --- Left side: Current conditions ---
@@ -204,7 +205,7 @@ class GenerateWeatherImage extends Command
 
             $text = __('messages.alert').": " . $data['alerts']['alert'][0]['desc'];
             $text = str_replace(array("\n", "\r"), '', $text);
-            $text = wordwrap( $text,80,"\n",true );
+            $text = wordwrap( $text,80,"\n",false );
 
             imagettftext($image, $this->font_size/2, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
         }

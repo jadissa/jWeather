@@ -1,8 +1,6 @@
     <?php
 
     return [
-        'weather_for'       => 'Weather for',
-        'fetch_time'        => 'Hourly',
         'cloud_coverage'    => 'Cloud Coverage',
         'decreasing'        => 'Decreasing',
         'increasing'        => 'Increasing',
