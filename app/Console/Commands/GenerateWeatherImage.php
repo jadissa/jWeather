@@ -148,7 +148,7 @@ class GenerateWeatherImage extends Command
         // Draw heading
         $currentY       = 40;
         $top_y          = $currentY;
-        $timestamp      = date( 'D: h:i:s' );
+        $timestamp      = date( 'D. h:i:s' );
         $locationName   = $data['location']['name'];
         $headingText    = "$locationName, $timestamp";
         imagettftext($image, $this->font_size+5, 0, 20, $top_y, $this->font_color, $this->font_family, $headingText);
