@@ -97,7 +97,7 @@ class GenerateWeatherImage extends Command
 
         // Define image
         $width              = 1200;
-        $height             = 950;
+        $height             = 900;
         $image              = imagecreatetruecolor($width, $height);
 
         // Define weather Colors
