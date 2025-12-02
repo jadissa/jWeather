@@ -147,23 +147,23 @@ class GenerateWeatherImage extends Command
 
         // Make transparent
         imagesavealpha($image, true);
-        $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
+        $transparent    = imagecolorallocatealpha($image, 0, 0, 0, 127);
+        $currentY       = 400;
+        $leftMargin     = 20;
+        $topLeft        = $currentY - $leftMargin;
+
         imagefill($image, 0, 0, $transparent);
 
         // Draw clock
-        $this->drawClock( $image,0,0 );
+        $this->drawClock( $image,( $leftMargin )*-1,325 );
 
         // Draw heading
-        $currentY       = 400;
         $top_y          = $currentY;
-        $timestamp      = date( 'l, h:i a' );
-        $locationName   = $data['location']['name'];
-        $headingText    = "$locationName, $timestamp";
+        $headingText    = "{$data['location']['name']}, {$data['location']['region']}";
         imagettftext($image, $this->font_size+5, 0, 20, $top_y, $this->font_color, $this->font_family, $headingText);
 
         // Draw horizontal line
         $currentY += 25;
-        $leftMargin = 20;
         imageline( $image,$leftMargin,$currentY,$width,$currentY,$this->font_color );
 
         // --- Left side: Current conditions ---
@@ -759,7 +759,18 @@ class GenerateWeatherImage extends Command
 
         $currentTime = date( 'h:i' ); 
         $timeFontSize = $this->font_size * 9;
-        imagettftext( $image,$timeFontSize,$x,$y,$timeFontSize,$this->font_color,$this->font_family,$currentTime );
+
+        imagettftext(
+            $image,
+            $timeFontSize,
+            0,
+            $x,
+            $y,
+            $this->font_color,
+            $this->font_family,
+            $currentTime,
+            []
+        );
 
     }
 
