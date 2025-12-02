@@ -30,14 +30,19 @@ class GenerateWeatherImage extends Command
     public function handle()
     {
 
-        try {
+        try
+        {
+            date_default_timezone_set( config( 'services.weatherapi.time_zone' ) );
+
             App::setLocale(config('services.weatherapi.app_locale'));
 
             $weatherData = $this->fetchWeatherData();
             //print json_encode( $weatherData );exit;
             $this->createWeatherImage( $weatherData );
             $this->info( 'Image generated successfully at public/images/out.png' );
-        } catch( Exception $e ) {
+        }
+        catch( Exception $e )
+        {
             $this->error('An error occurred: ' . $e->getMessage());
         }
 
@@ -92,7 +97,7 @@ class GenerateWeatherImage extends Command
 
         // Define image
         $width              = 1200;
-        $height             = 448;
+        $height             = 950;
         $image              = imagecreatetruecolor($width, $height);
 
         // Define weather Colors
@@ -145,20 +150,24 @@ class GenerateWeatherImage extends Command
         $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
         imagefill($image, 0, 0, $transparent);
 
+        // Draw clock
+        $this->drawClock( $image,0,0 );
+
         // Draw heading
-        $currentY       = 40;
+        $currentY       = 400;
         $top_y          = $currentY;
-        $timestamp      = date( 'D. h:i:s' );
+        $timestamp      = date( 'l, h:i a' );
         $locationName   = $data['location']['name'];
         $headingText    = "$locationName, $timestamp";
         imagettftext($image, $this->font_size+5, 0, 20, $top_y, $this->font_color, $this->font_family, $headingText);
 
+        // Draw horizontal line
+        $currentY += 25;
+        $leftMargin = 20;
+        imageline( $image,$leftMargin,$currentY,$width,$currentY,$this->font_color );
+
         // --- Left side: Current conditions ---
         $currentY += 100;
-        $leftMargin = 20;
-
-        // Draw horizontal line
-        imageline($image, $leftMargin, 50, $width, 50, $this->font_color);
         
         // Draw current image
         $column_y = $currentY-43;
@@ -197,15 +206,20 @@ class GenerateWeatherImage extends Command
         // Alert data
         $currentY += 60;
         if (isset($data['alerts']['alert'][0])) {
+            // Alert heading
             $text = __('messages.alert').": " . $data['alerts']['alert'][0]['event'];
-            //print'<pre>';print_r( $data['alerts']['alert']);print'</pre>';
             imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
 
+            // Alert message
             $currentY += 40;
-
             $text = __('messages.alert').": " . $data['alerts']['alert'][0]['desc'];
             $text = str_replace(array("\n", "\r"), '', $text);
             $text = wordwrap( $text,80,"\n",false );
+            $truncate = strpos( $text,'WHERE' );
+            if ($truncate !== false) {
+
+                $text = substr( $text,0,$truncate );
+            }
 
             imagettftext($image, $this->font_size/2, 0, $leftMargin, $currentY, $this->font_color, $this->font_family, $text);
         }
@@ -275,7 +289,7 @@ class GenerateWeatherImage extends Command
             $highTempText = $day['day']["maxtemp_{$this->heat_unit}"] . "°";
             imagettftext($image, $this->font_size-5, 0, $x, $currentY, $this->font_color, $this->font_family, $highTempText);
 
-            $currentY += 30;
+            $currentY += 45;
 
             // Vertical temperature line (20x100 pixel, filled dynamically)
             $tempLineHeight = 100;
@@ -355,7 +369,7 @@ class GenerateWeatherImage extends Command
                 IMG_ARC_PIE
             );
 
-            $currentY += $tempLineHeight + 55;
+            $currentY = $currentY + ( $tempLineHeight ) + 45;
 
             // Low temperature
             $lowTempText = $day['day']["mintemp_{$this->heat_unit}"] . "°";
@@ -738,6 +752,14 @@ class GenerateWeatherImage extends Command
     private function drawDarkClouds( $image,$x,$y ) {
 
         imagefilledellipse( $image,$x+10,$y + 8,42,30,$this->dark_grey );
+
+    }
+
+    private function drawClock( $image,$x,$y ) {
+
+        $currentTime = date( 'h:i' ); 
+        $timeFontSize = $this->font_size * 9;
+        imagettftext( $image,$timeFontSize,$x,$y,$timeFontSize,$this->font_color,$this->font_family,$currentTime );
 
     }
 
