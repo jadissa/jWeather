@@ -53,7 +53,7 @@ Notes:
 `which php`
 - You can disable the output by checking override text and setting the value to a space in GT
 
-- Set the command to run every 3,600 seconds
+- Set the command to run every 60 seconds
 - Set Timeout to something such as 20 seconds
 - Check Display status feedback image
 - In your terminal, run `/path/to/php /path/to/jWeather/artisan weather:generate-image` to generate the weather display, if necessary or to test
@@ -82,6 +82,7 @@ Any Mac system that has php installed
 - You can change size of font in your `.env`, along with other settings
 - The reason this project requires MacOS is because I'm not aware of another way besides GeekTool to easily place an image on your desktop in a certain position. You could technically try alternatives to solve this, as I'm sure they exist
 - You may need to run `/path/to/php /path/to/jWeather/artisan weather:generate-image` to see those changes immediately
+- The free WeatherAPI.com plan has a limit of 1,000 API calls per day and 100 calls per minute. For higher usage, you can upgrade to a production or enterprise key, which offers more advanced usage management
 
 ## Tests
 `cd /path/to/jWeather && php artisan test --filter GenerateWeatherImageTest`
