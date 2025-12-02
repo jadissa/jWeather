@@ -72,7 +72,7 @@ Note:
 - Set local path to: `/path/to/jWeather/public/images/out.png`
 
 - Resize the 'Image' window to desired size by dragging the bottom right corner
-- Set to run every every 2 seconds or no more than 3600 seconds
+- Set to run every every 60 seconds for the clock to display properly
 - At this point, you should be set!
 
 ## Platforms
