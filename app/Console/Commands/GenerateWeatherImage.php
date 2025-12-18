@@ -102,6 +102,7 @@ class GenerateWeatherImage extends Command
         $this->white        = imagecolorallocate( $image,255,255,255 );
         $this->yellow       = imagecolorallocate( $image,255,223,0 );
         $this->pale         = imagecolorallocate( $image,230,230,230 );
+        $this->black        = imagecolorallocate( $image,0,0,0 );
 
         // Define fonts
         $this->font_color   = $this->hexToRgb( config('services.weatherapi.font_color') ) ?? [255, 255, 255];
@@ -131,7 +132,7 @@ class GenerateWeatherImage extends Command
         imagefill( $image,0,0,$transparent );
 
         // Draw clock
-        $this->drawClock( $image,( $leftMargin )*-1,$currentY );
+        $this->drawClock( $image,( $leftMargin )*-1,$currentY,$this->font_color,$this->font_size * 9 );
 
         // Save the image
         $imagePath = public_path( 'images/clock.png' );
@@ -410,6 +411,12 @@ class GenerateWeatherImage extends Command
             $lowTempText = $day['day']["mintemp_{$this->heat_unit}"] . "°";
             imagettftext($image, $this->font_size-5, 0, $x, $currentY, $this->font_color, $this->font_family, $lowTempText);
         }
+
+        // Timestamp the image generated
+        $currentY = $currentY+20;
+        $gen_size = $this->font_size/2;
+        imagettftext( $image,$gen_size,0,$leftMargin,$currentY,$this->font_color,$this->font_family,'Generated at...' );
+        $this->drawClock( $image,$leftMargin+125,$currentY,$this->font_color,$gen_size,'m-d h:i' );
 
         // Save the image
         $imagePath = public_path('images/weather.png');
@@ -791,18 +798,17 @@ class GenerateWeatherImage extends Command
 
     }
 
-    private function drawClock( $image,$x,$y ) {
+    private function drawClock( $image,$x,$y,$font_color,$font_size,$format='h:i' ) {
 
-        $currentTime = date( 'h:i' ); 
-        $timeFontSize = $this->font_size * 9;
+        $currentTime = date( $format ); 
 
         imagettftext(
             $image,
-            $timeFontSize,
+            $font_size,
             0,
             $x,
             $y,
-            $this->font_color,
+            $font_color,
             $this->font_family,
             $currentTime,
             []
