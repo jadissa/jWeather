@@ -13,6 +13,9 @@ This project is based on: https://github.com/nickroberts/geektool-forecast.io-we
 ## Requirements
 PHP, GeekTool, WeatherAPI account (yes, it is free)
 
+## Platforms
+Any Mac system that has PHP and GeekTool installed
+
 ## How
 Note:
 - Requires GeekTool, which can be downloaded from https://www.tynsoe.org/geektool/
@@ -40,32 +43,21 @@ TIME_ZONE="America/Los_Angeles"
 APP_LOCALE=en
 DEMO_SESH=false
 ```
+___
 
-- Open GeekTool
+- Open GeekTool to get started
 
 #### Enable Weather Generation Method 1
 - Drag new 'Shell' Geeklet to your desktop
 - Paste the following line into the Shell Command:
 `/path/to/php /path/to/jWeather/artisan weather:generate-image`
 
-Notes:
-- The following command can show you the path to your php install:
-`which php`
-- You can disable the output by checking override text and setting the value to a space in GT
-
-- Set the command to run every 60 seconds
-- Set Timeout to something such as 20 seconds
-- Check Display status feedback image
-- In your terminal, run `/path/to/php /path/to/jWeather/artisan weather:generate-image` to generate the weather display, if necessary or to test
-
-#### Enable Weather Generation Method 2 ( optional )
-Note:
-- This only applies if you chose to not do method 1
-
+#### Enable Weather Generation Method 2 
 - Create a cron entry in your system for the weather script to run:
 - In your terminal, run `crontab -e`
 - Paste the following into your crontab:
 - `0 * * * * /path/to/php /path/to/jWeather/artisan weather:generate-image`
+___
 
 #### Enable Weather Display
 - Drag new 'Image' Geeklet to your desktop
@@ -81,15 +73,17 @@ Note:
 - Resize the 'Image' window to desired size by dragging the bottom right corner
 - Set to run every every 60 seconds
 - At this point, you should be set!
-
-## Platforms
-Any Mac system that has php installed
+___
 
 ## FAQ
 - You can change size of font in your `.env`, along with other settings
 - The reason this project requires MacOS is because I'm not aware of another way besides GeekTool to easily place an image on your desktop in a certain position. You could technically try alternatives to solve this, as I'm sure they exist
 - You may need to run `/path/to/php /path/to/jWeather/artisan weather:generate-image` to see those changes immediately
 - The free WeatherAPI.com plan has a limit of 1,000 API calls per day and 100 calls per minute. For higher usage, you can upgrade to a production or enterprise key, which offers more advanced usage management
+- The following command can show you the path to your php install:
+`which php`
+- You can disable the output by checking override text and setting the value to a space in GT within GeekTool's config window for each image
+- In your terminal, run `/path/to/php /path/to/jWeather/artisan weather:generate-image` to generate the weather display, if necessary or to test
 
 ## Tests
 `cd /path/to/jWeather && php artisan test --filter GenerateWeatherImageTest`
