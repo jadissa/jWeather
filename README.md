@@ -69,10 +69,17 @@ Note:
 
 #### Enable Weather Display
 - Drag new 'Image' Geeklet to your desktop
-- Set local path to: `/path/to/jWeather/public/images/out.png`
+- Set local path to: `/path/to/jWeather/public/images/weather.png`
 
 - Resize the 'Image' window to desired size by dragging the bottom right corner
-- Set to run every every 60 seconds for the clock to display properly
+- Set to run every every 60 seconds
+
+#### Enable Clock Display
+- Drag new 'Image' Geeklet to your desktop
+- Set local path to: `/path/to/jWeather/public/images/clock.png`
+
+- Resize the 'Image' window to desired size by dragging the bottom right corner
+- Set to run every every 60 seconds
 - At this point, you should be set!
 
 ## Platforms
@@ -90,8 +97,9 @@ Any Mac system that has php installed
 ## Issues
 https://github.com/jadissa/jWeather/issues
 - If the weather API ever stops working, weather.gov currently provides a free service and this code could be updated to support that API instead: https://api.weather.gov/
+- If you need to update laravel: `cd /path/to/jWeather/ && composer update`
 
 ## Screenshots
 <p float="left">
-  <img src="screenshots/1.png" width="400" />
+  <img src="public/images/1.png" width="400" />
 </p>

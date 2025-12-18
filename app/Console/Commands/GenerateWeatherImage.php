@@ -32,14 +32,13 @@ class GenerateWeatherImage extends Command
 
         try
         {
+            // Define zone
             date_default_timezone_set( config( 'services.weatherapi.time_zone' ) );
-
             App::setLocale(config('services.weatherapi.app_locale'));
 
-            $weatherData = $this->fetchWeatherData();
-            //print json_encode( $weatherData );exit;
-            $this->createWeatherImage( $weatherData );
-            $this->info( 'Image generated successfully at public/images/out.png' );
+            $this->createClockImage();
+
+            $this->createWeatherImage( $this->fetchWeatherData() );
         }
         catch( Exception $e )
         {
@@ -92,28 +91,67 @@ class GenerateWeatherImage extends Command
         return ['r' => $r, 'g' => $g, 'b' => $b];
     }
 
-    private function createWeatherImage($data)
+    private function allocateTypography( $image )
     {
 
-        // Define image
-        $width              = 1200;
-        $height             = 900;
-        $image              = imagecreatetruecolor($width, $height);
-
-        // Define weather Colors
+        // Define colors
         $this->grey         = imagecolorallocate( $image,147,148,150 );
         $this->dark_grey    = imagecolorallocate( $image,100,100,100 );
         $this->light_grey   = imagecolorallocate( $image,175,178,182 );
         $this->blue         = imagecolorallocate( $image,0,128,255 );
         $this->white        = imagecolorallocate( $image,255,255,255 );
         $this->yellow       = imagecolorallocate( $image,255,223,0 );
-        $this->pale         = imagecolorallocate($image, 230, 230, 230);
+        $this->pale         = imagecolorallocate( $image,230,230,230 );
 
         // Define fonts
         $this->font_color   = $this->hexToRgb( config('services.weatherapi.font_color') ) ?? [255, 255, 255];
-        $this->font_color   = imagecolorallocate($image, $this->font_color['r'], $this->font_color['g'], $this->font_color['b']);
+        $this->font_color   = imagecolorallocate( $image,$this->font_color['r'],$this->font_color['g'],$this->font_color['b'] );
         $this->font_family  = public_path( config('services.weatherapi.font_family') );
         $this->font_size    = config('services.weatherapi.font_size');
+    }
+
+    private function createClockImage()
+    {
+
+        // Define image
+        $width              = 1200;
+        $height             = 300;
+        $image              = imagecreatetruecolor( $width,$height );
+
+        // Define fonts and colors
+        $this->allocateTypography( $image );
+
+        // Make transparent
+        imagesavealpha( $image,true );
+        $transparent    = imagecolorallocatealpha( $image,0,0,0,127 );
+        $currentY       = 250;
+        $leftMargin     = 20;
+        $topLeft        = $currentY - $leftMargin;
+
+        imagefill( $image,0,0,$transparent );
+
+        // Draw clock
+        $this->drawClock( $image,( $leftMargin )*-1,$currentY );
+
+        // Save the image
+        $imagePath = public_path( 'images/clock.png' );
+        imagepng( $image,$imagePath );
+        imagedestroy( $image );
+        
+        $this->info( 'Image generated successfully at public/images/clock.png' );
+
+    }
+
+    private function createWeatherImage($data)
+    {
+
+        // Define image
+        $width              = 1200;
+        $height             = 600;
+        $image              = imagecreatetruecolor( $width,$height );
+
+        // Define fonts and colors
+        $this->allocateTypography( $image );
 
         // Define data constraints
         $this->precision    = config('services.weatherapi.precision');
@@ -146,16 +184,13 @@ class GenerateWeatherImage extends Command
         }
 
         // Make transparent
-        imagesavealpha($image, true);
-        $transparent    = imagecolorallocatealpha($image, 0, 0, 0, 127);
-        $currentY       = 400;
+        imagesavealpha( $image,true );
+        $transparent    = imagecolorallocatealpha( $image,0,0,0,127 );
+        $currentY       = 200;
         $leftMargin     = 20;
         $topLeft        = $currentY - $leftMargin;
 
         imagefill($image, 0, 0, $transparent);
-
-        // Draw clock
-        $this->drawClock( $image,( $leftMargin )*-1,325 );
 
         // Draw heading
         $top_y          = $currentY;
@@ -377,9 +412,10 @@ class GenerateWeatherImage extends Command
         }
 
         // Save the image
-        $imagePath = public_path('images/out.png');
-        imagepng($image, $imagePath);
-        imagedestroy($image);
+        $imagePath = public_path('images/weather.png');
+        imagepng( $image,$imagePath );
+        imagedestroy( $image );
+        $this->info( 'Image generated successfully at public/images/weather.png' );
     }
 
     private function fahrenheitToCelsius(float $fahrenheit): float {
