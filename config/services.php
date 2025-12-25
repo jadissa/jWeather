@@ -43,6 +43,7 @@ return [
         'font_family' => env( 'FONT_FAMILY','fonts/Brush Script.ttf'),
         'font_fg_color' => env('FONT_FG_COLOR', '#ffffff'),
         'font_bg_color' => env('FONT_BG_COLOR', '#000000'),
+        'font_shadow_size' => env('FONT_SHADOW_SIZE',0),
         'font_size' => env('FONT_SIZE', 12),
         'heat_unit' => env('HEAT_UNIT', 'c'),
         'speed_unit' => env('SPEED_UNIT', 'kpm'),

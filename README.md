@@ -30,13 +30,16 @@ WEATHERAPI_KEY="xxxxxxxxxxxx"
 IMAGE_DIRECTORY="images"
 DAYS_TO_FETCH=3
 FONT_FAMILY="fonts/fontx.lel"
-FONT_COLOR="#c64fff"
+FONT_FG_COLOR="#ffffff"
+FONT_BG_COLOR="#e44be1"
+FONT_SHADOW_SIZE=1
 FONT_SIZE=35
 # c or f
 HEAT_UNIT="f"
 # kpm or mph
 SPEED_UNIT="mph"
 PRECISION=1
+LANG="en"
 LATITUDE="xxxxxxxxx"
 LONGITUDE="yyyyyyyy"
 TIME_ZONE="America/Los_Angeles"
