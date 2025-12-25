@@ -152,7 +152,7 @@ class GenerateWeatherImage extends Command
 
         // Define image
         $width              = 1200;
-        $height             = 600;
+        $height             = 670;
         $image              = imagecreatetruecolor( $width,$height );
 
         // Define fonts and colors
@@ -270,6 +270,13 @@ class GenerateWeatherImage extends Command
             imagettftext($image, $this->font_size/2, 0, $leftMargin+2, $currentY+2, $this->font_bg_color, $this->font_family, $text);
             imagettftext($image, $this->font_size/2, 0, $leftMargin, $currentY, $this->font_fg_color, $this->font_family, $text);
         }
+
+        // Timestamp the image generated
+        $currentY += 40;
+        $gen_size = $this->font_size/2;
+        imagettftext( $image,$gen_size,0,$leftMargin+2,$currentY+2,$this->font_bg_color,$this->font_family,'Generated at...' );
+        imagettftext( $image,$gen_size,0,$leftMargin,$currentY,$this->font_fg_color,$this->font_family,'Generated at...' );
+        $this->drawClock( $image,$leftMargin+125,$currentY,$gen_size,'m-d h:i' );
 
         // Condition/Clouds
         /*
@@ -457,13 +464,6 @@ class GenerateWeatherImage extends Command
             imagettftext($image, $this->font_size-5, 0, $x+2, $currentY+2, $this->font_bg_color, $this->font_family, $lowTempText);
             imagettftext($image, $this->font_size-5, 0, $x, $currentY, $this->font_fg_color, $this->font_family, $lowTempText);
         }
-
-        // Timestamp the image generated
-        $currentY = $currentY+20;
-        $gen_size = $this->font_size/2;
-        imagettftext( $image,$gen_size,0,$leftMargin+2,$currentY+2,$this->font_bg_color,$this->font_family,'Generated at...' );
-        imagettftext( $image,$gen_size,0,$leftMargin,$currentY,$this->font_fg_color,$this->font_family,'Generated at...' );
-        $this->drawClock( $image,$leftMargin+125,$currentY,$gen_size,'m-d h:i' );
 
         // Save the image
         $imagePath = public_path('images/weather.png');
