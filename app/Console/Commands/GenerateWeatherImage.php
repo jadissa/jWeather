@@ -95,24 +95,25 @@ class GenerateWeatherImage extends Command
     {
 
         // Define colors
-        $this->grey         = imagecolorallocate( $image,147,148,150 );
-        $this->dark_grey    = imagecolorallocate( $image,100,100,100 );
-        $this->light_grey   = imagecolorallocate( $image,175,178,182 );
-        $this->blue         = imagecolorallocate( $image,0,128,255 );
-        $this->white        = imagecolorallocate( $image,255,255,255 );
-        $this->yellow       = imagecolorallocate( $image,255,223,0 );
-        $this->pale         = imagecolorallocate( $image,230,230,230 );
-        $this->black        = imagecolorallocate( $image,0,0,0 );
+        $this->grey             = imagecolorallocate( $image,147,148,150 );
+        $this->dark_grey        = imagecolorallocate( $image,100,100,100 );
+        $this->light_grey       = imagecolorallocate( $image,175,178,182 );
+        $this->blue             = imagecolorallocate( $image,0,128,255 );
+        $this->white            = imagecolorallocate( $image,255,255,255 );
+        $this->yellow           = imagecolorallocate( $image,255,223,0 );
+        $this->pale             = imagecolorallocate( $image,230,230,230 );
+        $this->black            = imagecolorallocate( $image,0,0,0 );
 
         // Define fonts
-        $this->font_fg_color   = $this->hexToRgb( config('services.weatherapi.font_fg_color') ) ?? [255, 255, 255];
-        $this->font_fg_color   = imagecolorallocate( $image,$this->font_fg_color['r'],$this->font_fg_color['g'],$this->font_fg_color['b'] );
+        $this->font_fg_color    = $this->hexToRgb( config('services.weatherapi.font_fg_color') ) ?? [255, 255, 255];
+        $this->font_fg_color    = imagecolorallocate( $image,$this->font_fg_color['r'],$this->font_fg_color['g'],$this->font_fg_color['b'] );
 
-        $this->font_bg_color   = $this->hexToRgb( config('services.weatherapi.font_bg_color') ) ?? [0, 0, 0];
-        $this->font_bg_color   = imagecolorallocate( $image,$this->font_bg_color['r'],$this->font_bg_color['g'],$this->font_bg_color['b'] );
+        $this->font_bg_color    = $this->hexToRgb( config('services.weatherapi.font_bg_color') ) ?? [0, 0, 0];
+        $this->font_bg_color    = imagecolorallocate( $image,$this->font_bg_color['r'],$this->font_bg_color['g'],$this->font_bg_color['b'] );
 
-        $this->font_family  = public_path( config('services.weatherapi.font_family') );
-        $this->font_size    = config('services.weatherapi.font_size');
+        $this->font_family      = public_path( config('services.weatherapi.font_family') );
+        $this->font_size        = config('services.weatherapi.font_size');
+        $this->font_shadow_size = 1;
     }
 
     private function createClockImage()
@@ -201,7 +202,7 @@ class GenerateWeatherImage extends Command
         $top_y          = $currentY;
         $headingText    = "{$data['location']['name']}, {$data['location']['region']}";
         imagettftext($image, $this->font_size+5, 0, 20, $top_y, $this->font_bg_color, $this->font_family, $headingText);
-        imagettftext($image, $this->font_size+5, 0, 20+2, $top_y+2, $this->font_fg_color, $this->font_family, $headingText);
+        imagettftext($image, $this->font_size+5, 0, 20+$this->font_shadow_size, $top_y+$this->font_shadow_size, $this->font_fg_color, $this->font_family, $headingText);
 
         // Draw horizontal line
         $currentY += 25;
@@ -218,7 +219,7 @@ class GenerateWeatherImage extends Command
         // Current temperature
         $currentY+=50;
         $text = $this->current["temp_{$this->heat_unit}"]. '°';
-        imagettftext($image, $this->font_size*4, 0, $leftMargin + 60 + 2, $currentY + 2, $this->font_bg_color, $this->font_family, $text);
+        imagettftext($image, $this->font_size*4, 0, $leftMargin + 60 + $this->font_shadow_size, $currentY + $this->font_shadow_size, $this->font_bg_color, $this->font_family, $text);
         imagettftext($image, $this->font_size*4, 0, $leftMargin + 60, $currentY, $this->font_fg_color, $this->font_family, $text);
 
         // Increasing/decreasing
@@ -228,13 +229,13 @@ class GenerateWeatherImage extends Command
         // Snow/Rain
         $currentY += 50;
         $text = __('messages.chance_of_rain').": {$this->rain_chance}%, ".__('messages.chance_of_snow').": {$this->snow_chance}%";
-        imagettftext($image, $this->font_size-5, 0, $leftMargin+2, $currentY+2, $this->font_bg_color, $this->font_family, $text);
+        imagettftext($image, $this->font_size-5, 0, $leftMargin+$this->font_shadow_size, $currentY+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $text);
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_fg_color, $this->font_family, $text);
 
         // Humidity
         $currentY += 40;
         $humidityText = __('messages.cloudy').": " . $this->current['cloud'] . "% , ".__('messages.humidity').": " . $this->current['humidity'] . "%";
-        imagettftext($image, $this->font_size-5, 0, $leftMargin+2, $currentY+2, $this->font_bg_color, $this->font_family, $humidityText);
+        imagettftext($image, $this->font_size-5, 0, $leftMargin+$this->font_shadow_size, $currentY+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $humidityText);
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_fg_color, $this->font_family, $humidityText);
 
         // Wind
@@ -245,7 +246,7 @@ class GenerateWeatherImage extends Command
             $text .= ", ".__('messages.gusts').": " . $this->current["gust_{$this->speed_unit}"] . " {$this->speed_unit}";
 
         }
-        imagettftext($image, max( $this->font_size/2, 10 ), 0, $leftMargin+45+2, $currentY+2, $this->font_bg_color, $this->font_family, $text);
+        imagettftext($image, max( $this->font_size/2, 10 ), 0, $leftMargin+45+$this->font_shadow_size, $currentY+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $text);
         imagettftext($image, max( $this->font_size/2, 10 ), 0, $leftMargin+45, $currentY, $this->font_fg_color, $this->font_family, $text);
 
         // Alert data
@@ -253,7 +254,7 @@ class GenerateWeatherImage extends Command
         if (isset($data['alerts']['alert'][0])) {
             // Alert heading
             $text = __('messages.alert').": " . $data['alerts']['alert'][0]['event'];
-            imagettftext($image, $this->font_size, 0, $leftMargin+2, $currentY+2, $this->font_bg_color, $this->font_family, $text);
+            imagettftext($image, $this->font_size, 0, $leftMargin+$this->font_shadow_size, $currentY+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $text);
             imagettftext($image, $this->font_size, 0, $leftMargin, $currentY, $this->font_fg_color, $this->font_family, $text);
 
             // Alert message
@@ -267,14 +268,14 @@ class GenerateWeatherImage extends Command
                 $text = substr( $text,0,$truncate );
             }
 
-            imagettftext($image, $this->font_size/2, 0, $leftMargin+2, $currentY+2, $this->font_bg_color, $this->font_family, $text);
+            imagettftext($image, $this->font_size/2, 0, $leftMargin+$this->font_shadow_size, $currentY+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $text);
             imagettftext($image, $this->font_size/2, 0, $leftMargin, $currentY, $this->font_fg_color, $this->font_family, $text);
         }
 
         // Timestamp the image generated
         $currentY += 40;
         $gen_size = $this->font_size/2;
-        imagettftext( $image,$gen_size,0,$leftMargin+2,$currentY+2,$this->font_bg_color,$this->font_family,'Generated at...' );
+        imagettftext( $image,$gen_size,0,$leftMargin+$this->font_shadow_size,$currentY+$this->font_shadow_size,$this->font_bg_color,$this->font_family,'Generated at...' );
         imagettftext( $image,$gen_size,0,$leftMargin,$currentY,$this->font_fg_color,$this->font_family,'Generated at...' );
         $this->drawClock( $image,$leftMargin+125,$currentY,$gen_size,'m-d h:i' );
 
@@ -282,7 +283,7 @@ class GenerateWeatherImage extends Command
         /*
         $currentY += 40;
         $text = "$conditionText, Cloud Coverage: " . $this->current['cloud'] . "%";
-        imagettftext($image, $this->font_size-5, 0, $leftMargin+2, $currentY+2, $this->font_bg_color, $this->font_family, $text);
+        imagettftext($image, $this->font_size-5, 0, $leftMargin+$this->font_shadow_size, $currentY+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $text);
         imagettftext($image, $this->font_size-5, 0, $leftMargin, $currentY, $this->font_fg_color, $this->font_family, $text);
         */
 
@@ -297,7 +298,7 @@ class GenerateWeatherImage extends Command
 
             // Day name (e.g., Mon, Tues)
             $dayName = date('D', strtotime($day['date']));
-            imagettftext($image, $this->font_size, 0, $x+2, $top_y+2, $this->font_bg_color, $this->font_family, $dayName);
+            imagettftext($image, $this->font_size, 0, $x+$this->font_shadow_size, $top_y+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $dayName);
             imagettftext($image, $this->font_size, 0, $x, $top_y, $this->font_fg_color, $this->font_family, $dayName);
 
             $currentY += 55;
@@ -343,7 +344,7 @@ class GenerateWeatherImage extends Command
 
             // High temperature
             $highTempText = $day['day']["maxtemp_{$this->heat_unit}"] . "°";
-            imagettftext($image, $this->font_size-5, 0, $x+2, $currentY+2, $this->font_bg_color, $this->font_family, $highTempText);
+            imagettftext($image, $this->font_size-5, 0, $x+$this->font_shadow_size, $currentY+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $highTempText);
             imagettftext($image, $this->font_size-5, 0, $x, $currentY, $this->font_fg_color, $this->font_family, $highTempText);
 
             $currentY += 45;
@@ -357,8 +358,8 @@ class GenerateWeatherImage extends Command
             // Top
             imagefilledarc(
                 $image,
-                $x+15 + $tempLineWidth / 2+2, // X-coordinate of the center of the arc
-                $currentY+2, // Y-coordinate of the center of the arc
+                $x+15 + $tempLineWidth / 2+$this->font_shadow_size, // X-coordinate of the center of the arc
+                $currentY+$this->font_shadow_size, // Y-coordinate of the center of the arc
                 $tempLineWidth, // Width of the ellipse
                 20, // Height of the ellipse
                 180, // Start angle (top half of a circle)
@@ -412,7 +413,7 @@ class GenerateWeatherImage extends Command
 
             // Draw the 1-pixel horizontal line
             imageline($image, $line_x1, $line_y, $line_x2, $line_y, $this->font_fg_color);
-            imagettftext($image, max( $this->font_size-20, 10 ), 0, $line_x2+7+2, $line_y+5+2, $this->font_bg_color, $this->font_family, $avgTempText);
+            imagettftext($image, max( $this->font_size-20, 10 ), 0, $line_x2+7+$this->font_shadow_size, $line_y+5+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $avgTempText);
             imagettftext($image, max( $this->font_size-20, 10 ), 0, $line_x2+7, $line_y+5, $this->font_fg_color, $this->font_family, $avgTempText);
 
             // Middle
@@ -420,8 +421,8 @@ class GenerateWeatherImage extends Command
                 $image,
                 $x+15 + ($tempLineWidth / 2) - 10,
                 $currentY,
-                $x+15 + ($tempLineWidth / 2) + 10+2,
-                $currentY + $fillHeight+2,
+                $x+15 + ($tempLineWidth / 2) + 10+$this->font_shadow_size,
+                $currentY + $fillHeight+$this->font_shadow_size,
                 $this->font_bg_color
             );
             imagefilledrectangle(
@@ -436,8 +437,8 @@ class GenerateWeatherImage extends Command
             // Bottom
             imagefilledarc(
                 $image,
-                $x+15 + $tempLineWidth / 2+2, // X-coordinate of the center of the arc
-                $currentY + $fillHeight+2, // Y-coordinate of the center of the arc
+                $x+15 + $tempLineWidth / 2+$this->font_shadow_size, // X-coordinate of the center of the arc
+                $currentY + $fillHeight+$this->font_shadow_size, // Y-coordinate of the center of the arc
                 $tempLineWidth, // Width of the ellipse
                 20, // Height of the ellipse
                 0, // Start angle (bottom half of a circle)
@@ -461,7 +462,7 @@ class GenerateWeatherImage extends Command
 
             // Low temperature
             $lowTempText = $day['day']["mintemp_{$this->heat_unit}"] . "°";
-            imagettftext($image, $this->font_size-5, 0, $x+2, $currentY+2, $this->font_bg_color, $this->font_family, $lowTempText);
+            imagettftext($image, $this->font_size-5, 0, $x+$this->font_shadow_size, $currentY+$this->font_shadow_size, $this->font_bg_color, $this->font_family, $lowTempText);
             imagettftext($image, $this->font_size-5, 0, $x, $currentY, $this->font_fg_color, $this->font_family, $lowTempText);
         }
 
@@ -684,7 +685,7 @@ class GenerateWeatherImage extends Command
 
         $shape_size = ( 36 );
 
-        imagefilledellipse( $image,$x+2,$y+2,$shape_size,$shape_size,$this->font_bg_color );
+        imagefilledellipse( $image,$x+$this->font_shadow_size,$y+$this->font_shadow_size,$shape_size,$shape_size,$this->font_bg_color );
         imagefilledellipse( $image,$x,$y,$shape_size,$shape_size,$this->yellow );
 
         return $shape_size;
@@ -712,7 +713,7 @@ class GenerateWeatherImage extends Command
         $shape_size = ( $radius );
 
         // Draw a filled ellipse to represent the moon. Since the height and width are the same, it will be a perfect circle.
-        imagefilledellipse( $image,$x+2,$y+2,$shape_size,$shape_size,$this->font_bg_color );
+        imagefilledellipse( $image,$x+$this->font_shadow_size,$y+$this->font_shadow_size,$shape_size,$shape_size,$this->font_bg_color );
         imagefilledellipse( $image,$x,$y,$shape_size,$shape_size,$this->pale );
 
         return $shape_size;
@@ -855,8 +856,8 @@ class GenerateWeatherImage extends Command
             $image,
             $font_size,
             0,
-            $x+2,
-            $y+2,
+            $x+$this->font_shadow_size,
+            $y+$this->font_shadow_size,
             $this->font_bg_color,
             $this->font_family,
             $currentTime,
