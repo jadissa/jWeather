@@ -153,7 +153,7 @@ class GenerateWeatherImage extends Command
 
         // Define image
         $width              = 1200;
-        $height             = 670;
+        $height             = 710;
         $image              = imagecreatetruecolor( $width,$height );
 
         // Define fonts and colors
@@ -324,7 +324,7 @@ class GenerateWeatherImage extends Command
         }
 
         // Timestamp the image generated
-        $currentY += 40;
+        $currentY += 90;
         $this->shadeImagettfText( 
             $image,
             $this->font_size/2,
