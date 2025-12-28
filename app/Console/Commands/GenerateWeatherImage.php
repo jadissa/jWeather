@@ -249,6 +249,18 @@ class GenerateWeatherImage extends Command
 
         // Snow/Rain
         $currentY += 50;
+        $text = __('messages.feelslike').": " . $this->current["feelslike_{$this->heat_unit}"];
+        $this->shadeImagettfText(
+            $image, 
+            $this->font_size, 
+            0, 
+            $leftMargin, 
+            $currentY, 
+            $text
+        );
+
+        // Snow/Rain
+        $currentY += 40;
         $text = __('messages.chance_of_rain').": {$this->rain_chance}%, ".__('messages.chance_of_snow').": {$this->snow_chance}%";
         $this->shadeImagettfText(
             $image, 
