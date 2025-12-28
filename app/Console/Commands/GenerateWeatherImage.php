@@ -290,7 +290,7 @@ class GenerateWeatherImage extends Command
 
         // Alert data
         $currentY += 60;
-        if (isset($data['alerts']['alert'][0])) {
+        if ( isset( $data['alerts']['alert'][0] ) ) {
             // Alert heading
             $text = __('messages.alert').": " . $data['alerts']['alert'][0]['event'];
             $this->shadeImagettfText(
@@ -305,7 +305,8 @@ class GenerateWeatherImage extends Command
             // Alert message
             $currentY += 40;
             $text = __('messages.alert').": " . $data['alerts']['alert'][0]['desc'];
-            $text = str_replace(array("\n", "\r"), '', $text);
+            $text = str_replace( array( '*' ),'',$text );
+            $text = str_replace( array( "\n", "\r" ),' ',$text );
             $text = wordwrap( $text,80,"\n",false );
             $truncate = strpos( $text,'WHERE' );
             if ($truncate !== false) {
