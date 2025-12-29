@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\App;
+use App\Http\Controllers\GetAPIResponse; // Import the controller
 use Exception;
 
 class GenerateWeatherImage extends Command
@@ -50,20 +51,24 @@ class GenerateWeatherImage extends Command
     private function fetchWeatherData()
     {
 
-        $response = Http::get("http://api.weatherapi.com/v1/forecast.json", [
-            'key' => config('services.weatherapi.weatherapi_key'),
-            'q' => config('services.weatherapi.latitude').','.config('services.weatherapi.longtitude'),
-            'days' => config('services.weatherapi.days_to_fetch'),
-            'alerts' => 'yes',
-            'lang' => config('services.weatherapi.app_locale'),
-        ]);
+        $controller = new GetAPIResponse();
+        $lat        = config('services.weatherapi.latitude');
+        $long       = config('services.weatherapi.longtitude');
+        $num_days   = config('services.weatherapi.days_to_fetch');
+        $forecastData = $controller->getWeatherForecast( $lat,$long,$num_days );
+        
+        if( $forecastData->successful() ) {
 
-        if ($response->successful()) {
-            // print json_encode( $response->json() );exit;
-            return $response->json();
+            return json_encode($forecastData, JSON_PRETTY_PRINT;
+
         }
 
-        throw new Exception("Failed to fetch weather data: " . $response->body());
+        $this->info(json_encode($forecastData, JSON_PRETTY_PRINT));
+        $this->info(json_encode([
+            'notes' => 'You need to go through the process of updating the interpretation of the response within ' . __FILE__,
+        ]));
+
+        throw new Exception("Failed to fetch weather data: " . $forecastData->body());
 
     }
 
