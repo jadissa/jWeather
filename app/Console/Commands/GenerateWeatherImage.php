@@ -153,7 +153,7 @@ class GenerateWeatherImage extends Command
 
         // Define image
         $width              = 1200;
-        $height             = 710;
+        $height             = 725;
         $image              = imagecreatetruecolor( $width,$height );
 
         // Define fonts and colors
@@ -233,6 +233,16 @@ class GenerateWeatherImage extends Command
             $currentY, 
             $text
         );
+        $text = __('messages.feelslike')." " . $this->current["feelslike_{$this->heat_unit}"];
+        $this->shadeImagettfText(
+            $image, 
+            $this->font_size / 1.2, 
+            0, 
+            $leftMargin + 300, 
+            $currentY, 
+            $text
+        );
+        $currentY += 40;
 
         // Increasing/decreasing
         //$currentY += 40;
@@ -246,8 +256,8 @@ class GenerateWeatherImage extends Command
             $this->temp_direction 
         );
         */
-
-        // Snow/Rain
+        /*
+        // Feels like
         $currentY += 50;
         $text = __('messages.feelslike').": " . $this->current["feelslike_{$this->heat_unit}"];
         $this->shadeImagettfText(
@@ -258,6 +268,7 @@ class GenerateWeatherImage extends Command
             $currentY, 
             $text
         );
+        */
 
         // Snow/Rain
         $currentY += 40;

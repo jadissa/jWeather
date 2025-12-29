@@ -1,7 +1,7 @@
     <?php
 
     return [
-        'feelslike'         => 'Feels Like',
+        'feelslike'         => 'F Like',
         'cloud_coverage'    => 'Cloud Coverage',
         'decreasing'        => 'Decreasing',
         'increasing'        => 'Increasing',
