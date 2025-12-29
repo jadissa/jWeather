@@ -94,7 +94,7 @@ ___
 
 ## Issues
 https://github.com/jadissa/jWeather/issues
-- If the weather API ever stops working, weather.gov currently provides a free service and this code could be updated to support that API instead, very easily: https://api.weather.gov/
+- If the weather API ever stops working, weather.gov currently provides a free service and this code could be updated to support that API instead, very easily: https://api.weather.gov/. See branch for example code: https://github.com/jadissa/jWeather/tree/api-swap/weather.gov
 - If you need to update laravel: `cd /path/to/jWeather/ && composer update`
 
 ## Screenshots
