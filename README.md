@@ -87,13 +87,14 @@ ___
 `which php`
 - You can disable the output by checking override text and setting the value to a space in GT within GeekTool's config window for each image
 - In your terminal, run `/path/to/php /path/to/jWeather/artisan weather:generate-image` to generate the weather display, if necessary or to test
+- The clock is drawn seperately from the weather, so that if the weather call fails, the clock continues to work. The weather call is timestamped in the image for clarity
 
 ## Tests
 `cd /path/to/jWeather && php artisan test --filter GenerateWeatherImageTest`
 
 ## Issues
 https://github.com/jadissa/jWeather/issues
-- If the weather API ever stops working, weather.gov currently provides a free service and this code could be updated to support that API instead: https://api.weather.gov/
+- If the weather API ever stops working, weather.gov currently provides a free service and this code could be updated to support that API instead, very easily: https://api.weather.gov/
 - If you need to update laravel: `cd /path/to/jWeather/ && composer update`
 
 ## Screenshots
