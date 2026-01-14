@@ -32,6 +32,10 @@ class GenerateWeatherImage extends Command
 
         try
         {
+            /*
+            error_reporting(E_ALL);
+            ini_set('display_errors', 1);
+            */
             // Define zone
             date_default_timezone_set( config( 'services.weatherapi.time_zone' ) );
             App::setLocale(config('services.weatherapi.app_locale'));
@@ -238,10 +242,10 @@ class GenerateWeatherImage extends Command
         $text = __('messages.feelslike') . " " . $temp . '°';
         $this->shadeImagettfText(
             $image, 
-            $this->font_size / 1.2, 
+            $this->font_size/1.2, 
             0, 
-            $leftMargin + 315, 
-            $currentY, 
+            $leftMargin + 450, 
+            $currentY - 25, 
             $text
         );
         $currentY += 40;
@@ -447,7 +451,7 @@ class GenerateWeatherImage extends Command
             $highTempText = $temp . "°";
             $this->shadeImagettfText(
                 $image, 
-                $this->font_size-5, 
+                $this->font_size/1.2, 
                 0, 
                 $x, 
                 $currentY, 
@@ -474,21 +478,6 @@ class GenerateWeatherImage extends Command
                 IMG_ARC_PIE
             );
 
-            // Average high temperature
-            $avgTemp[ $index ]  = number_format( $day['day']["avgtemp_{$this->heat_unit}"],1 );
-            $avgTempText = $avgTemp[ $index ];
-            /*
-            imageline( 
-                $image,
-                $x+15 + ($tempLineWidth / 2) - 10,
-                $currentY-15,
-                $x+15 + ($tempLineWidth / 2) + 15,
-                ( $currentY + $fillHeight ) / 2,
-                $this->font_fg_color );
-            */
-            // Assuming the variables for the rectangle are already defined.
-            // The image resource $image, and the color $this->font_fg_color are also defined.
-
             // Define the coordinates of the rectangle to make the calculation clearer
             $rect_x1 = $x + 15 + ($tempLineWidth / 2) - 10;
             $rect_y1 = $currentY;
@@ -506,11 +495,12 @@ class GenerateWeatherImage extends Command
             $line_x1 = $center_x - ($line_width / 2);
             $line_x2 = $center_x + ($line_width / 2) - 1; // Subtract 1 for inclusive pixel count
 
-            // Draw the 1-pixel horizontal line
+            // Average high temperature
             imageline($image, $line_x1, $line_y, $line_x2, $line_y, $this->font_fg_color);
+            $avgTempText  = number_format( $day['day']["avgtemp_{$this->heat_unit}"],1 );
             $this->shadeImagettfText(
                 $image, 
-                max( $this->font_size-20, 10 ), 
+                $this->font_size/2, 
                 0, 
                 $line_x2+7, 
                 $line_y+5, 
@@ -546,7 +536,7 @@ class GenerateWeatherImage extends Command
             $lowTempText = $temp . "°";
             $this->shadeImagettfText(
                 $image, 
-                $this->font_size-5, 
+                $this->font_size/1.2, 
                 0, 
                 $x, 
                 $currentY, 
@@ -558,7 +548,6 @@ class GenerateWeatherImage extends Command
         // Save the image
         $imagePath = public_path('images/weather.png');
         imagepng( $image,$imagePath );
-        imagedestroy( $image );
         $this->info( 'Image generated successfully at public/images/weather.png' );
     }
 
@@ -956,7 +945,8 @@ class GenerateWeatherImage extends Command
     private function shadeImagettfText( $image,$font_size,$angle,$x,$y,$text ) {
 
         // Background
-        imagettftext( $image,$font_size,$angle,$x+$this->font_shadow_size,$y+$this->font_shadow_size,$this->font_bg_color,$this->font_family,$text,[] );
+        $font_shadow_size = $this->font_shadow_size;
+        imagettftext( $image,$font_size,$angle,$x+$font_shadow_size,$y+$font_shadow_size,$this->font_bg_color,$this->font_family,$text,[] );
 
         // Foreground
         imagettftext( $image,$font_size,$angle,$x,$y,$this->font_fg_color,$this->font_family,$text,[] );
