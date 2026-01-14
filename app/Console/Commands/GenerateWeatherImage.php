@@ -945,7 +945,7 @@ class GenerateWeatherImage extends Command
     private function shadeImagettfText( $image,$font_size,$angle,$x,$y,$text ) {
 
         // Background
-        $font_shadow_size = $this->font_shadow_size;
+        $font_shadow_size = /*( $font_size < 140 ) ? $this->font_shadow_size / 1.1 : */$this->font_shadow_size;
         imagettftext( $image,$font_size,$angle,$x+$font_shadow_size,$y+$font_shadow_size,$this->font_bg_color,$this->font_family,$text,[] );
 
         // Foreground
