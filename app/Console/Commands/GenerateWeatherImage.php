@@ -348,6 +348,7 @@ class GenerateWeatherImage extends Command
 
                 $text = substr( $text,0,$truncate );
             }
+            $text = mb_strimwidth($text, 0, 200, '...');
 
             $this->shadeImagettfText(
                 $image, 
