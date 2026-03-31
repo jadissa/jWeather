@@ -226,20 +226,29 @@ class GenerateWeatherImage extends Command
         $this->drawCurrentIcon( $image,$leftMargin + 32,$column_y );
         $currentY = $column_y+40;
 
-        // Current temperature
+        // Feels like temperature
         $currentY+=50;
-        $temp = number_format( $this->current["temp_{$this->heat_unit}"],1 );
+        $this->shadeImagettfText(
+            $image,
+            $this->font_size/1.2,
+            0,
+            $leftMargin + 60,
+            $currentY - 100,
+            __('messages.feelslike') . " ",
+        );
+        $temp = number_format( $this->current["feelslike_{$this->heat_unit}"],1 );
         $text = $temp . '°';
         $this->shadeImagettfText(
             $image, 
             $this->font_size*4, 
             0, 
-            $leftMargin + 60, 
+            $leftMargin + 90, 
             $currentY, 
             $text
         );
-        $temp = number_format( $this->current["feelslike_{$this->heat_unit}"],1 );
-        $text = __('messages.feelslike') . " " . $temp . '°';
+        // Current temperature
+        $temp = number_format( $this->current["temp_{$this->heat_unit}"],1 );
+        $text = $temp . '°';
         $this->shadeImagettfText(
             $image, 
             $this->font_size/1.2, 
