@@ -232,9 +232,9 @@ class GenerateWeatherImage extends Command
             $image,
             $this->font_size/1.2,
             0,
-            $leftMargin + 60,
+            $leftMargin + 80,
             $currentY - 100,
-            __('messages.feelslike') . " ",
+            __('messages.feelslike') . "",
         );
         $temp = number_format( $this->current["feelslike_{$this->heat_unit}"],1 );
         $text = $temp . '°';
@@ -242,7 +242,7 @@ class GenerateWeatherImage extends Command
             $image, 
             $this->font_size*4, 
             0, 
-            $leftMargin + 90, 
+            $leftMargin + 145, 
             $currentY, 
             $text
         );
@@ -253,7 +253,7 @@ class GenerateWeatherImage extends Command
             $image, 
             $this->font_size/1.2, 
             0, 
-            $leftMargin + 450, 
+            $leftMargin + 495, 
             $currentY - 25, 
             $text
         );
