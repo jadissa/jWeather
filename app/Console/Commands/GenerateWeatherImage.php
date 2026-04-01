@@ -333,9 +333,9 @@ class GenerateWeatherImage extends Command
         );
 
         // Alert data
-        $currentY += 60;
         if ( isset( $data['alerts']['alert'][0] ) ) {
             // Alert heading
+            $currentY += 60;
             $text = __('messages.alert') . ": " . $data['alerts']['alert'][0]['event'];
             $this->shadeImagettfText(
                 $image, 
