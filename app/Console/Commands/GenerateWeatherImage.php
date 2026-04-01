@@ -357,7 +357,7 @@ class GenerateWeatherImage extends Command
 
                 $text = substr( $text,0,$truncate );
             }
-            $text = mb_strimwidth($text, 0, 150, '...');
+            $text = mb_strimwidth( $text,0,config('services.weatherapi.alert_length'),'...' );
 
             $this->shadeImagettfText(
                 $image, 
@@ -377,7 +377,7 @@ class GenerateWeatherImage extends Command
             0,
             $leftMargin,
             $currentY,
-            'Generated at...' 
+            __('messages.generated_at').'...' 
         );
         $this->drawClock( $image,$leftMargin+125,$currentY,$this->font_size/2,'m-d h:i' );
 

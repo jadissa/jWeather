@@ -12,4 +12,5 @@
         'chance_of_snow'    => 'Chance of Snow',
         'wind'              => 'Wind',
         'alert'             => 'Alert',
+        'generated_at'      => 'Generated at',
     ];
