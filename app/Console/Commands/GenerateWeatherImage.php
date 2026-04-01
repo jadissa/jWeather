@@ -351,19 +351,19 @@ class GenerateWeatherImage extends Command
             $text = __('messages.alert') . ": " . $data['alerts']['alert'][0]['desc'];
             $text = str_replace( array( '*' ),'',$text );
             $text = str_replace( array( "\n", "\r" ),' ',$text );
-            $text = wordwrap( $text,80,"\n",false );
+            $text = wordwrap( $text,75,"\n",false );
             $truncate = strpos( $text,'WHERE' );
             if ($truncate !== false) {
 
                 $text = substr( $text,0,$truncate );
             }
-            $text = mb_strimwidth($text, 0, 200, '...');
+            $text = mb_strimwidth($text, 0, 150, '...');
 
             $this->shadeImagettfText(
                 $image, 
                 $this->font_size/2, 
                 0, 
-                $leftMargin, 
+                $leftMargin+45, 
                 $currentY,
                 $text
             );
