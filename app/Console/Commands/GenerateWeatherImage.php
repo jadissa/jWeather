@@ -193,6 +193,20 @@ class GenerateWeatherImage extends Command
 
         }
 
+        // Sometimes only the alert has lightning
+        if ( isset( $data['alerts']['alert'][0] ) ) {
+
+            if( preg_match( '/understo/',$data['alerts']['alert'][0]['event'] ) ) {
+
+                $this->current['condition']['text'] .= ', lightning';
+
+                $conditionText      = $this->current['condition']['text'];
+
+            }
+
+        }
+        //print'<pre>';print_r( $conditionText );print'</pre>';
+
         // Make transparent
         imagesavealpha( $image,true );
         $transparent    = imagecolorallocatealpha( $image,0,0,0,127 );
@@ -897,8 +911,12 @@ class GenerateWeatherImage extends Command
 
     private function drawLightning( $image,$x,$y ) {
 
+        imageline( $image,$x + 30, $y + 15,( $x + 20 ),( $y + 30 ),$this->blue );
+        imageline( $image,$x + 31, $y + 15,( $x + 21 ),( $y + 30 ),$this->white );
         imageline( $image,$x + 32, $y + 15,( $x + 22 ),( $y + 30 ),$this->white );
         imageline( $image,$x + 33, $y + 15,( $x + 23 ),( $y + 30 ),$this->white );
+        imageline( $image,$x + 34, $y + 15,( $x + 24 ),( $y + 30 ),$this->white );
+        imageline( $image,$x + 35, $y + 15,( $x + 25 ),( $y + 30 ),$this->blue );
 
         imageline( $image,$x + 22, $y + 30,( $x + 42 ),( $y + 30 ),$this->white );
         imageline( $image,$x + 23, $y + 30,( $x + 43 ),( $y + 30 ),$this->white );
