@@ -95,13 +95,8 @@ ___
 ## Issues
 https://github.com/jadissa/jWeather/issues
 - If the weather API ever stops working, weather.gov currently provides a free service and this code could be updated to support that API instead, very easily: https://api.weather.gov/
-- A few commands to get you going:
-```
-composer create-project laravel/laravel weather.gov && cd weather.gov
-php artisan make:controller GetAPIResponse
-php artisan make:command GetWeatherForecastCommand
-php artisan weather:forecast
-```
+- Check out example branch:
+`php artisan app:get-weather-forecast-command`
 - If you need to update laravel: `cd /path/to/jWeather/ && composer update`
 
 ## Screenshots
