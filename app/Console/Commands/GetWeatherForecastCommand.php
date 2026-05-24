@@ -1,5 +1,10 @@
 <?php
 
+/*
+This is just a test playground script
+I'll want to move this over to Console/Commands/GenerateWeatherImage.php 
+that will take place once i'm done doing the migration to this new API
+*/
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
