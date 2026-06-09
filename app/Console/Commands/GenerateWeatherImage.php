@@ -248,7 +248,7 @@ class GenerateWeatherImage extends Command
             0,
             $leftMargin,
             $currentY = $column_y+55,
-            __('messages.feelslike') . "",
+            __('messages.feelslike'),
         );
         $temp = number_format( $this->current["feelslike_{$this->heat_unit}"],1 );
         $text = $temp . '°';
@@ -260,7 +260,15 @@ class GenerateWeatherImage extends Command
             $currentY + 30,
             $text
         );
-        // Current temperature
+        // Actual temperature
+        $this->shadeImagettfText(
+            $image,
+            $this->font_size/1.5,
+            0,
+            $leftMargin + 475, 
+            $currentY, 
+            __('messages.actual'),
+        );
         $temp = number_format( $this->current["temp_{$this->heat_unit}"],1 );
         $text = $temp . '°';
         $this->shadeImagettfText(
@@ -268,7 +276,7 @@ class GenerateWeatherImage extends Command
             $this->font_size/1.2, 
             0, 
             $leftMargin + 475, 
-            $currentY, 
+            $currentY+30, 
             $text
         );
         $currentY += 60;
@@ -705,12 +713,7 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( str_contains( $conditionText, 'overcast' ) ) {
-
-            $this->drawDarkClouds( $image,$x+30,$y-5+10 );
-
-        }
-        $this->drawLightClouds( $image,$x+30,$y-5+10 );
+        $this->drawClouds( $image,$x+30,$y-5+10 );
 
         // Fog
         if( str_contains( $conditionText,'fog' ) or str_contains( $conditionText,'mist' ) ) {
@@ -760,12 +763,7 @@ class GenerateWeatherImage extends Command
         }
 
         // Clouds
-        if( str_contains($conditionText, 'overcast' ) ) {
-
-            $this->drawDarkClouds( $image,$x + 25,$y + 12 );
-
-        }
-        $this->drawLightClouds( $image,$x + 25,$y + 10 );
+        $this->drawClouds( $image,$x + 25,$y + 10 );
 
         // Fog
         if( str_contains( $conditionText,'fog' ) or str_contains( $conditionText,'mist' ) ) {
@@ -869,7 +867,7 @@ class GenerateWeatherImage extends Command
 
         }
 
-        for( $i =0;$i < $snow_count;$i++ ) {
+        for( $i = 0;$i < $snow_count;$i++ ) {
 
             imagefilledellipse( $image, $x + rand(5, 64),$y + rand(30, 55),5,5,$this->white );
 
@@ -926,7 +924,7 @@ class GenerateWeatherImage extends Command
 
     }
 
-    private function drawLightClouds( $image,$x,$y ) {
+    private function drawClouds( $image,$x,$y ) {
 
         $cloudy_pct = $this->current['cloud'];
 
@@ -935,22 +933,21 @@ class GenerateWeatherImage extends Command
             imagefilledellipse( $image,$x-20,$y + 10,15,10,$this->light_grey );
         
         }
+        if( $cloudy_pct >= 70 ) {
+
+            imagefilledellipse( $image,$x,$y + 8,42,30,$this->dark_grey );
+
+        }
         if( $cloudy_pct > 25 ) {
 
-            imagefilledellipse( $image,$x,$y + 10,38,22,$this->grey );
+            imagefilledellipse( $image,$x,$y + 10,38,18,$this->grey );
 
         }
         if( $cloudy_pct > 0 ) {
             
-            imagefilledellipse( $image,$x+20,$y + 14,30,10,$this->light_grey );
+            imagefilledellipse( $image,$x+20,$y + 14,30,10,$this->white );
 
         }
-
-    }
-
-    private function drawDarkClouds( $image,$x,$y ) {
-
-        imagefilledellipse( $image,$x+10,$y + 8,42,30,$this->dark_grey );
 
     }
 
