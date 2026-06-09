@@ -1,6 +1,7 @@
     <?php
 
     return [
+        'actual'            => 'Actual',
         'feelslike'         => 'F Como',
         'cloud_coverage'    => 'Cobertura nubosa',
         'decreasing'        => 'Decreciente',
