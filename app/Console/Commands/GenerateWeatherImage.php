@@ -265,7 +265,7 @@ class GenerateWeatherImage extends Command
             $image,
             $this->font_size/1.5,
             0,
-            $leftMargin + 475, 
+            $leftMargin + 575, 
             $currentY, 
             __('messages.actual'),
         );
@@ -275,7 +275,7 @@ class GenerateWeatherImage extends Command
             $image, 
             $this->font_size/1.2, 
             0, 
-            $leftMargin + 475, 
+            $leftMargin + 575, 
             $currentY+30, 
             $text
         );
@@ -423,7 +423,7 @@ class GenerateWeatherImage extends Command
 
         foreach( $this->forecast as $index => $day ) {
 
-            $x = $rightMargin + ($index * $columnWidth) + 50;
+            $x = $rightMargin + ($index * $columnWidth) + 100;
             $currentY = $top_y;
 
             // Day name (e.g., Mon, Tues)
