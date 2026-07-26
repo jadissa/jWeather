@@ -157,7 +157,7 @@ class GenerateWeatherImage extends Command
 
         // Define image
         $width              = 1200;
-        $height             = 850;
+        $height             = 1200;
         $image              = imagecreatetruecolor( $width,$height );
 
         // Define fonts and colors
@@ -276,7 +276,7 @@ class GenerateWeatherImage extends Command
             $this->font_size*2, 
             0, 
             $leftMargin + 110, 
-            $currentY + 10, 
+            $currentY + 15, 
             $text
         );
         $currentY += 60;
@@ -356,43 +356,47 @@ class GenerateWeatherImage extends Command
 
         // Alert data
         if ( isset( $data['alerts']['alert'][0] ) ) {
-            // Alert heading
-            $currentY += 60;
-            $text = __('messages.alert') . ": " . $data['alerts']['alert'][0]['event'];
-            $this->shadeImagettfText(
-                $image, 
-                $this->font_size, 
-                0, 
-                $leftMargin, 
-                $currentY,
-                $text
-            );
+            $currentY += 90;
+            foreach( $data['alerts']['alert'] as $i => $ALERT ) {
+                // Alert message
+                $ALERT['desc'] = str_replace( array( '*' ),'',$ALERT['desc'] );
+                $ALERT['desc'] = str_replace( array( "\n", "\r" ),' ',$ALERT['desc'] );
+                $ALERT['desc'] = wordwrap( $ALERT['desc'],75,"\n",false );
+                $truncate = strpos( $ALERT['desc'],'WHERE' );
+                if ($truncate !== false) {
 
-            // Alert message
-            $currentY += 40;
-            $text = __('messages.alert') . ": " . $data['alerts']['alert'][0]['desc'];
-            $text = str_replace( array( '*' ),'',$text );
-            $text = str_replace( array( "\n", "\r" ),' ',$text );
-            $text = wordwrap( $text,75,"\n",false );
-            $truncate = strpos( $text,'WHERE' );
-            if ($truncate !== false) {
+                    $ALERT['desc'] = substr( $ALERT['desc'],0,$truncate );
+                }
+                $ALERT['desc'] = mb_strimwidth( $ALERT['desc'],0,config('services.weatherapi.alert_length'),'...' );
 
-                $text = substr( $text,0,$truncate );
+                $this->shadeImagettfText(
+                    $image, 
+                    $this->font_size/1.2, 
+                    0, 
+                    $leftMargin, 
+                    $currentY,
+                    $ALERT['areas']
+                );
+
+
+                $currentY +=35;
+
+                $this->shadeImagettfText(
+                    $image, 
+                    $this->font_size/2, 
+                    0, 
+                    $leftMargin+45, 
+                    $currentY,
+                    $ALERT['desc']
+                );
+
+                $currentY +=70;
+
             }
-            $text = mb_strimwidth( $text,0,config('services.weatherapi.alert_length'),'...' );
 
-            $this->shadeImagettfText(
-                $image, 
-                $this->font_size/2, 
-                0, 
-                $leftMargin+45, 
-                $currentY,
-                $text
-            );
         }
 
         // Timestamp the image generated
-        $currentY += 90;
         $this->shadeImagettfText( 
             $image,
             $this->font_size/2,
