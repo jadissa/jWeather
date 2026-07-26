@@ -157,7 +157,7 @@ class GenerateWeatherImage extends Command
 
         // Define image
         $width              = 1200;
-        $height             = 725;
+        $height             = 850;
         $image              = imagecreatetruecolor( $width,$height );
 
         // Define fonts and colors
@@ -233,21 +233,19 @@ class GenerateWeatherImage extends Command
         imageline( $image,$leftMargin,$currentY,$width,$currentY,$this->font_fg_color );
 
         // --- Left side: Current conditions ---
-        $currentY += 100;
+        $currentY += 40;
         
         // Draw current image
-        $column_y = $currentY-43;
-        $this->drawCurrentIcon( $image,$leftMargin + 32,$column_y );
-        $currentY = $column_y+40;
+        $this->drawCurrentIcon( $image,$leftMargin + 32,$currentY );
 
         // Feels like temperature
-        $currentY+=50;
+        $currentY+=35;
         $this->shadeImagettfText(
             $image,
             $this->font_size/1.2,
             0,
             $leftMargin,
-            $currentY = $column_y+55,
+            $currentY = $currentY+40,
             __('messages.feelslike'),
         );
         $temp = number_format( $this->current["feelslike_{$this->heat_unit}"],1 );
@@ -257,15 +255,17 @@ class GenerateWeatherImage extends Command
             $this->font_size*4, 
             0, 
             $leftMargin + 90, 
-            $currentY + 30,
+            $currentY+40,
             $text
         );
+
         // Actual temperature
+        $currentY = $currentY+120;
         $this->shadeImagettfText(
             $image,
-            $this->font_size/1.5,
+            $this->font_size/1.2,
             0,
-            $leftMargin + 575, 
+            $leftMargin, 
             $currentY, 
             __('messages.actual'),
         );
@@ -273,10 +273,10 @@ class GenerateWeatherImage extends Command
         $text = $temp . '°';
         $this->shadeImagettfText(
             $image, 
-            $this->font_size/1.2, 
+            $this->font_size*2, 
             0, 
-            $leftMargin + 575, 
-            $currentY+30, 
+            $leftMargin + 110, 
+            $currentY + 10, 
             $text
         );
         $currentY += 60;
@@ -307,34 +307,6 @@ class GenerateWeatherImage extends Command
         );
         */
 
-        // Snow/Rain
-        $currentY += 40;
-        $rain_chance = number_format( $this->rain_chance,1 );
-        $snow_chance = number_format( $this->snow_chance,1 );
-        $text = __('messages.chance_of_rain') . ": $rain_chance%, " . __('messages.chance_of_snow') . ": $snow_chance%";
-        $this->shadeImagettfText(
-            $image, 
-            $this->font_size-5, 
-            0, 
-            $leftMargin, 
-            $currentY, 
-            $text
-        );
-
-        // Humidity
-        $currentY += 40;
-        $cloud_coverage = number_format( $this->current['cloud'],1 );
-        $humidity = number_format( $this->current['humidity'],1 );
-        $humidityText = __('messages.cloudy') . ": $cloud_coverage% , " . __('messages.humidity') . ": $humidity%";
-        $this->shadeImagettfText(
-            $image, 
-            $this->font_size-5, 
-            0, 
-            $leftMargin, 
-            $currentY, 
-            $humidityText
-        );
-
         // Wind
         $currentY += 40;
         $wind_speed = number_format( $this->current["wind_{$this->speed_unit}"],1 );
@@ -347,11 +319,39 @@ class GenerateWeatherImage extends Command
         }
         $this->shadeImagettfText(
             $image, 
-            max( $this->font_size/2, 10 ), 
+            max( $this->font_size-5, 10 ), 
+            0, 
+            $leftMargin, 
+            $currentY, 
+            $text
+        );
+
+        // Snow/Rain
+        $currentY += 40;
+        $rain_chance = number_format( $this->rain_chance,1 );
+        $snow_chance = number_format( $this->snow_chance,1 );
+        $text = __('messages.chance_of_rain') . ": $rain_chance%, " . __('messages.chance_of_snow') . ": $snow_chance%";
+        $this->shadeImagettfText(
+            $image, 
+            $this->font_size/2, 
             0, 
             $leftMargin+45, 
             $currentY, 
             $text
+        );
+
+        // Humidity
+        $currentY += 40;
+        $cloud_coverage = number_format( $this->current['cloud'],1 );
+        $humidity = number_format( $this->current['humidity'],1 );
+        $humidityText = __('messages.cloudy') . ": $cloud_coverage% , " . __('messages.humidity') . ": $humidity%";
+        $this->shadeImagettfText(
+            $image, 
+            $this->font_size/2, 
+            0, 
+            $leftMargin+45, 
+            $currentY, 
+            $humidityText
         );
 
         // Alert data
@@ -473,8 +473,8 @@ class GenerateWeatherImage extends Command
 
             }
 
-            $currentY = $column_y;
-            $this->drawForecastIcon( $image,$x,$column_y,$index );
+            $currentY = $currentY;
+            $this->drawForecastIcon( $image,$x,$currentY,$index );
 
             $currentY += 95;
 
