@@ -354,20 +354,31 @@ class GenerateWeatherImage extends Command
             $humidityText
         );
 
+        // Draw horizontal line
+        $currentY += 25;
+
+        $translucent_line_color = $this->hexToRgb( config('services.weatherapi.font_fg_color') ) ?? [255, 255, 255];
+        $translucent_line_color = imagecolorallocatealpha( $image,$translucent_line_color['r'],$translucent_line_color['g'],$translucent_line_color['b'],100 );
+        imageline( $image,$leftMargin,$currentY,$width,$currentY,$translucent_line_color );
+
         // Alert data
         if ( isset( $data['alerts']['alert'][0] ) ) {
             $currentY += 90;
             foreach( $data['alerts']['alert'] as $i => $ALERT ) {
-                // Alert message
-                $ALERT['desc'] = str_replace( array( '*' ),'',$ALERT['desc'] );
-                $ALERT['desc'] = str_replace( array( "\n", "\r" ),' ',$ALERT['desc'] );
-                $ALERT['desc'] = wordwrap( $ALERT['desc'],75,"\n",false );
+
+                // Trims
+                $MAX_LEN        = 75;
+                $ALERT['areas'] = substr( $ALERT['areas'],0,$MAX_LEN );
+                $ALERT['desc']  = substr( $ALERT['desc'],0,$MAX_LEN );
+
+                // Prune junk characters in data
+                $ALERT['desc']  = str_replace( array( '*' ),'',$ALERT['desc'] );
+                $ALERT['desc']  = str_replace( array( "\n", "\r" ),' ',$ALERT['desc'] );
                 $truncate = strpos( $ALERT['desc'],'WHERE' );
-                if ($truncate !== false) {
+                if( $truncate !== false ) {
 
                     $ALERT['desc'] = substr( $ALERT['desc'],0,$truncate );
                 }
-                $ALERT['desc'] = mb_strimwidth( $ALERT['desc'],0,config('services.weatherapi.alert_length'),'...' );
 
                 $this->shadeImagettfText(
                     $image, 
@@ -378,9 +389,7 @@ class GenerateWeatherImage extends Command
                     $ALERT['areas']
                 );
 
-
-                $currentY +=35;
-
+                $currentY +=55;
                 $this->shadeImagettfText(
                     $image, 
                     $this->font_size/2, 
@@ -394,9 +403,15 @@ class GenerateWeatherImage extends Command
 
             }
 
+            $currentY += 10;
+
         }
 
+        // Draw horizontal line
+        imageline( $image,$leftMargin,$currentY,$width,$currentY,$translucent_line_color );
+
         // Timestamp the image generated
+        $currentY += 25;
         $this->shadeImagettfText( 
             $image,
             $this->font_size/2,
