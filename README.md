@@ -36,7 +36,7 @@ FONT_SHADOW_SIZE=1
 FONT_SIZE=35
 # c or f
 HEAT_UNIT="f"
-# kpm or mph
+# kph or mph
 SPEED_UNIT="mph"
 PRECISION=1
 LANG="en"
