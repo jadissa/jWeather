@@ -117,7 +117,7 @@ class GenerateWeatherImage extends Command
 
         $this->font_family      = public_path( config('services.weatherapi.font_family') );
         $this->font_size        = config('services.weatherapi.font_size');
-        $this->font_shadow_size = 1;
+        $this->font_shadow_size = config('services.weatherapi.font_shadow_size');
     }
 
     private function createClockImage()
@@ -989,8 +989,7 @@ class GenerateWeatherImage extends Command
     private function shadeImagettfText( $image,$font_size,$angle,$x,$y,$text ) {
 
         // Background
-        $font_shadow_size = /*( $font_size < 140 ) ? $this->font_shadow_size / 1.1 : */$this->font_shadow_size;
-        imagettftext( $image,$font_size,$angle,$x+$font_shadow_size,$y+$font_shadow_size,$this->font_bg_color,$this->font_family,$text,[] );
+        imagettftext( $image,$font_size,$angle,$x+$this->font_shadow_size,$y+$this->font_shadow_size,$this->font_bg_color,$this->font_family,$text,[] );
 
         // Foreground
         imagettftext( $image,$font_size,$angle,$x,$y,$this->font_fg_color,$this->font_family,$text,[] );
