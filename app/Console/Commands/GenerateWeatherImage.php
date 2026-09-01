@@ -872,7 +872,7 @@ class GenerateWeatherImage extends Command
 
         $conditionText  = strtolower( $this->current['condition']['text'] );
 
-        if( str_contains( $conditionText,'light' ) ) {
+        if( str_contains( $conditionText,'light' ) or str_contains( $conditionText,'patchy' ) ) {
 
             $snow_count = 5;
 
