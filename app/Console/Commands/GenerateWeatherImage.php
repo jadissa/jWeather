@@ -368,7 +368,8 @@ class GenerateWeatherImage extends Command
 
                 // Trims
                 $MAX_LEN        = 75;
-                $ALERT['areas'] = substr( $ALERT['areas'],0,$MAX_LEN );
+                //$ALERT['areas'] = substr( $ALERT['areas'],0,$MAX_LEN );
+                $ALERT['areas'] = wordwrap( $ALERT['areas'], $MAX_LEN );
                 $ALERT['desc']  = substr( $ALERT['desc'],0,$MAX_LEN );
 
                 // Prune junk characters in data
@@ -389,7 +390,7 @@ class GenerateWeatherImage extends Command
                     $ALERT['areas']
                 );
 
-                $currentY +=55;
+                $currentY +=125;
                 $this->shadeImagettfText(
                     $image, 
                     $this->font_size/2, 
