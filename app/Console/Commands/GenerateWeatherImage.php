@@ -136,8 +136,6 @@ class GenerateWeatherImage extends Command
         $transparent    = imagecolorallocatealpha( $image,0,0,0,127 );
         $currentY       = 250;
         $leftMargin     = 20;
-        $topLeft        = $currentY - $leftMargin;
-
         imagefill( $image,0,0,$transparent );
 
         // Draw clock
